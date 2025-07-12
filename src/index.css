@@ -1,0 +1,238 @@
+/* 导入Google Fonts - 思源宋体用于中文 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+  }
+  
+  body {
+    @apply bg-gray-50 text-gray-900 antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  .btn-primary {
+    @apply btn bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500;
+  }
+  
+  .btn-secondary {
+    @apply btn bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-gray-500;
+  }
+  
+  .btn-success {
+    @apply btn bg-success-600 text-white hover:bg-success-700 focus:ring-success-500;
+  }
+  
+  .btn-danger {
+    @apply btn bg-danger-600 text-white hover:bg-danger-700 focus:ring-danger-500;
+  }
+  
+  .card {
+    @apply bg-white rounded-xl shadow-soft border border-gray-100;
+  }
+  
+  .input {
+    @apply w-full rounded-lg border border-gray-200 px-3 py-2 text-sm placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 transition-colors;
+  }
+  
+  .tag {
+    @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-medium;
+  }
+  
+  .tag-primary {
+    @apply tag bg-primary-100 text-primary-700;
+  }
+  
+  .tag-success {
+    @apply tag bg-success-100 text-success-700;
+  }
+  
+  .tag-danger {
+    @apply tag bg-danger-100 text-danger-700;
+  }
+  
+  .tag-gray {
+    @apply tag bg-gray-100 text-gray-700;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* 衬线字体类 - 用于引言和特殊文字 */
+.font-serif {
+  font-family: 'Noto Serif SC', Georgia, 'Times New Roman', serif;
+}
+
+/* Notion风格的卡片样式 - 仅用于欢迎页面 */
+.notion-card {
+  background: white;
+  border: 1px solid #E5E5E3;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: all 0.2s ease;
+}
+
+.notion-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-color: #D1D1D0;
+}
+
+/* Notion风格的按钮样式 - 仅用于欢迎页面 */
+.notion-button {
+  background: #2F5FD5;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.notion-button:hover {
+  background: #2A4FC7;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(47, 95, 213, 0.2);
+}
+
+.notion-button-secondary {
+  background: transparent;
+  color: #2F5FD5;
+  border: 1px solid #2F5FD5;
+}
+
+.notion-button-secondary:hover {
+  background: #2F5FD5;
+  color: white;
+}
+
+/* Notion风格的输入框样式 - 仅用于欢迎页面 */
+.notion-input {
+  background: white;
+  border: 1px solid #E5E5E3;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #37352F;
+  transition: all 0.2s ease;
+}
+
+.notion-input:focus {
+  outline: none;
+  border-color: #2F5FD5;
+  box-shadow: 0 0 0 2px rgba(47, 95, 213, 0.1);
+}
+
+/* Notion风格的标签样式 - 仅用于欢迎页面 */
+.notion-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  background: #F1F1F0;
+  color: #37352F;
+  border: 1px solid #E5E5E3;
+}
+
+/* 盈利/亏损颜色 */
+.profit {
+  color: #4DAB9A;
+}
+
+.loss {
+  color: #E03E3E;
+}
+
+/* 代码样式 - 用于股票代码等 */
+.code-inline {
+  background: #F1F1F0;
+  color: #37352F;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+/* 微妙的动画效果 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* 响应式容器 */
+.container-notion {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* 页面标题样式 */
+.page-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #37352F;
+  margin-bottom: 24px;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 500;
+  color: #37352F;
+  margin-bottom: 16px;
+}
+
+/* 分割线样式 */
+.divider {
+  height: 1px;
+  background: #E5E5E3;
+  margin: 24px 0;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F7F7F5;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D1D1D0;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #B8B8B7;
+} 
