@@ -1,6 +1,4 @@
-/* 导入Google Fonts - 思源宋体用于中文 */
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
