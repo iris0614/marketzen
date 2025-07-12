@@ -28,46 +28,6 @@ const Welcome: React.FC = () => {
     storage.saveSettings({ ...storage.getSettings(), language: newLanguage });
   };
 
-  const quotes = {
-    zh: {
-      title: "我们是时间与空间的访客，",
-      subtitle: "不过是匆匆路过。",
-      purpose: "此行的目的是观察、学习、成长与爱…",
-      ending: "...然后，回归家园。"
-    },
-    en: {
-      title: "We are all visitors to this time, this place.",
-      subtitle: "We are just passing through.",
-      purpose: "Our purpose here is to observe, to learn, to grow, to love...",
-      ending: "...and then we return home."
-    }
-  };
-
-  const currentQuote = quotes[language];
-
-  // 整句淡入动画，而不是逐字动画
-  const fadeInStyle = (delay: number) => ({
-    opacity: 0,
-    animation: `fadeIn 0.8s forwards`,
-    animationDelay: `${delay}s`,
-  });
-
-  // 渲染整句动画文本
-  const renderAnimatedText = (text: string, isEnglish: boolean = false, delay: number = 0) => (
-    <div style={fadeInStyle(delay)}>
-      <span style={{ 
-        fontSize: '1.5rem', // 中英文字体大小保持一致
-        fontFamily: 'Noto Serif SC, serif', 
-        fontWeight: 500,
-        lineHeight: '1.6',
-        whiteSpace: 'nowrap', // 确保英文不换行
-        display: 'block' // 每句话独占一行
-      }}>
-        {text}
-      </span>
-    </div>
-  );
-
   return (
     <div className="min-h-screen bg-[#F7F7F5] flex items-center justify-center px-4">
       {/* 微妙的背景纹理效果 */}
@@ -88,20 +48,6 @@ const Welcome: React.FC = () => {
               </h1>
             </div>
           </div>
-        </div>
-
-        {/* 引言文字 */}
-        <div className="mt-12 mb-8 text-center">
-          {renderAnimatedText(currentQuote.title, language === 'en', 0.2)}
-        </div>
-        <div className="mt-12 mb-8 text-center">
-          {renderAnimatedText(currentQuote.subtitle, language === 'en', 0.6)}
-        </div>
-        <div className="mt-12 mb-8 text-center">
-          {renderAnimatedText(currentQuote.purpose, language === 'en', 1.0)}
-        </div>
-        <div className="mt-12 mb-8 text-center">
-          {renderAnimatedText(currentQuote.ending, language === 'en', 1.4)}
         </div>
 
         {/* 语言切换按钮 */}
@@ -130,10 +76,3 @@ const Welcome: React.FC = () => {
 };
 
 export default Welcome; 
-
-// 3. 在文件底部添加全局动画样式
-<style>{`
-@keyframes fadeIn {
-  to { opacity: 1; }
-}
-`}</style> 
