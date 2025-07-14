@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { AppSettings } from '../types';
 import { t } from '../i18n';
 import { Settings as SettingsIcon, Save } from 'lucide-react';
+import { storage } from '../utils/storage';
 
 interface SettingsProps {
   settings: AppSettings;
@@ -21,6 +22,49 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate }) => {
     onUpdate(formData);
   };
 
+  // 导出数据
+  const handleExport = () => {
+    const data = {
+      trades: storage.getTrades(),
+      settings: storage.getSettings(),
+      keywords: storage.getKeywords(),
+      principles_zh: storage.getPrinciples('zh'),
+      principles_en: storage.getPrinciples('en'),
+      categories_zh: storage.getCategories('zh'),
+      categories_en: storage.getCategories('en'),
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'marketzen-backup.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // 导入数据
+  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const data = JSON.parse(event.target?.result as string);
+        if (data.trades) storage.saveTrades(data.trades);
+        if (data.settings) storage.saveSettings(data.settings);
+        if (data.keywords) storage.saveKeywords(data.keywords);
+        if (data.principles_zh) storage.savePrinciples(data.principles_zh, 'zh');
+        if (data.principles_en) storage.savePrinciples(data.principles_en, 'en');
+        if (data.categories_zh) storage.saveCategories(data.categories_zh, 'zh');
+        if (data.categories_en) storage.saveCategories(data.categories_en, 'en');
+        window.location.reload();
+      } catch (err) {
+        alert('导入失败，文件格式不正确！');
+      }
+    };
+    reader.readAsText(file);
+  };
+
   return (
     <div className="max-w-2xl mx-auto">
       {/* Header */}
@@ -29,6 +73,36 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate }) => {
         <h1 className="text-2xl font-bold text-gray-900">
           {t('settings', language)}
         </h1>
+      </div>
+
+      {/* 数据导出/导入功能 */}
+      <div className="card p-6 mb-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+          {language === 'zh' ? '数据备份与恢复' : 'Data Backup & Restore'}
+        </h2>
+        <div className="flex flex-col md:flex-row gap-4">
+          <button
+            type="button"
+            className="btn-primary"
+            onClick={handleExport}
+          >
+            {language === 'zh' ? '导出数据' : 'Export Data'}
+          </button>
+          <label className="btn-secondary cursor-pointer">
+            {language === 'zh' ? '导入数据' : 'Import Data'}
+            <input
+              type="file"
+              accept="application/json"
+              className="hidden"
+              onChange={handleImport}
+            />
+          </label>
+        </div>
+        <p className="text-xs text-gray-500 mt-2">
+          {language === 'zh'
+            ? '导出后请妥善保存备份文件。导入数据会覆盖当前所有本地数据。'
+            : 'Please keep your backup file safe. Importing will overwrite all your current local data.'}
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">

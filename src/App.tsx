@@ -5,19 +5,21 @@ import { Trade, AppSettings } from './types';
 import { storage } from './utils/storage';
 import { calculatePortfolioStats } from './utils/calculations';
 import { t } from './i18n';
+
+// Components
 import Header from './components/Header';
 import Welcome from './pages/Welcome';
 import Dashboard from './pages/Dashboard';
 import TradeForm from './pages/TradeForm';
-import Review from './pages/Review';
 import Journal from './pages/Journal';
+import Review from './pages/Review';
 import Settings from './pages/Settings';
 
 const queryClient = new QueryClient();
 
 function AppContent() {
-  const [trades, setTrades] = useState<Trade[]>([]);
   const [settings, setSettings] = useState<AppSettings>(storage.getSettings());
+  const [trades, setTrades] = useState<Trade[]>([]);
   const [stats, setStats] = useState(calculatePortfolioStats([]));
 
   useEffect(() => {
@@ -25,6 +27,15 @@ function AppContent() {
     setTrades(savedTrades);
     setStats(calculatePortfolioStats(savedTrades));
   }, []);
+
+  // 让Header和Welcome页面语言切换同步
+  const handleLanguageChange = (language: 'zh' | 'en') => {
+    setSettings((prev) => {
+      const newSettings = { ...prev, language };
+      storage.saveSettings(newSettings);
+      return newSettings;
+    });
+  };
 
   const handleAddTrade = (trade: Trade) => {
     const newTrades = [...trades, trade];
@@ -67,11 +78,11 @@ function AppContent() {
       <div className="min-h-screen bg-gray-50">
         <Header 
           language={settings.language}
-          onLanguageChange={(language) => handleUpdateSettings({ ...settings, language })}
+          onLanguageChange={handleLanguageChange}
         />
         <main className="container mx-auto px-4 py-6 max-w-6xl">
           <Routes>
-            <Route path="/" element={<Welcome />} />
+            <Route path="/" element={<Welcome key={settings.language} />} />
             <Route 
               path="/dashboard" 
               element={

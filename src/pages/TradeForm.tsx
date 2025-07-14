@@ -91,7 +91,7 @@ const TradeForm: React.FC<TradeFormProps> = ({ settings, trades = [], onSave }) 
       postMortemNotes: existingTrade?.postMortemNotes,
       createdAt: existingTrade?.createdAt || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      closedAt: existingTrade?.closedAt,
+
     };
     
     onSave(trade);

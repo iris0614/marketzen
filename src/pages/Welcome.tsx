@@ -30,10 +30,10 @@ const Welcome: React.FC = () => {
 
   const quotes = {
     zh: {
-      title: "我们是时间与空间的访客，",
-      subtitle: "不过是匆匆路过。",
-      purpose: "此行的目的是观察、学习、成长与爱…",
-      ending: "...然后，回归家园。"
+      title: "我们都是这个时空的过客，",
+      subtitle: "只是短暂停留。",
+      purpose: "我们的使命，是去观察，去学习，去成长，去爱……",
+      ending: "……然后，回到我们真正的归处。"
     },
     en: {
       title: "We are all visitors to this time, this place.",

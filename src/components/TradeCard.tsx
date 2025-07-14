@@ -47,7 +47,7 @@ const TradeCard: React.FC<TradeCardProps> = ({
         status: 'closed',
         exitPrice: Number(exitPrice),
         postMortemNotes,
-        closedAt: new Date().toISOString(),
+
       });
     }
   };

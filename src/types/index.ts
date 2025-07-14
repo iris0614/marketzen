@@ -14,7 +14,6 @@ export interface Trade {
   postMortemNotes?: string;
   createdAt: string;
   updatedAt: string;
-  closedAt?: string;
 }
 
 export interface TradeFormData {
@@ -85,4 +84,15 @@ export interface PrincipleCategory {
   name: string;
   color: string;
   createdAt: string;
+}
+
+export interface User {
+  id: string;
+  username: string;
+  displayName: string;
+}
+
+export interface AuthState {
+  isAuthenticated: boolean;
+  currentUser: User | null;
 } 
