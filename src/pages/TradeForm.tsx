@@ -141,14 +141,14 @@ const TradeForm: React.FC<TradeFormProps> = ({ settings, trades = [], onSave }) 
 
   const calculatePortfolioPercentage = () => {
     if (formData.amount && settings.totalPortfolio) {
-      return (formData.amount / settings.totalPortfolio) * 100;
+      return (formData.amount / Number(settings.totalPortfolio)) * 100;
     }
     return 0;
   };
 
   const calculateAmount = () => {
     if (formData.portfolioPercentage && settings.totalPortfolio) {
-      return (formData.portfolioPercentage / 100) * settings.totalPortfolio;
+      return (formData.portfolioPercentage / 100) * Number(settings.totalPortfolio);
     }
     return 0;
   };
