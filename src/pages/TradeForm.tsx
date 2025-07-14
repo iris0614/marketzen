@@ -39,7 +39,7 @@ const TradeForm: React.FC<TradeFormProps> = ({ settings, trades = [], onSave }) 
     content: '',
     category: '',
   });
-  const [categories] = useState(() => storage.getCategories());
+  const [categories] = useState(() => storage.getCategories(language));
 
   useEffect(() => {
     if (existingTrade) {
@@ -130,7 +130,7 @@ const TradeForm: React.FC<TradeFormProps> = ({ settings, trades = [], onSave }) 
         updatedAt: new Date().toISOString(),
       };
       
-      storage.addPrinciple(newPrinciple);
+      storage.addPrinciple(newPrinciple, language);
       setShowExtractModal(false);
       setExtractFormData({ content: '', category: '' });
       

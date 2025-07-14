@@ -25,18 +25,18 @@ const Journal: React.FC<JournalProps> = ({ settings, onPrincipleChange }) => {
   });
 
   useEffect(() => {
-    let savedPrinciples = storage.getPrinciples();
+    let savedPrinciples = storage.getPrinciples(language);
     let savedCategories = storage.getCategories(language);
     
     // If no data exists, load demo data based on language
     if (savedPrinciples.length === 0) {
       savedPrinciples = getDemoPrinciples(language);
-      storage.savePrinciples(savedPrinciples);
+      storage.savePrinciples(savedPrinciples, language);
     }
     
     if (savedCategories.length === 0) {
       savedCategories = getDemoCategories(language);
-      storage.saveCategories(savedCategories);
+      storage.saveCategories(savedCategories, language);
     }
     
     setPrinciples(savedPrinciples);
@@ -60,7 +60,7 @@ const Journal: React.FC<JournalProps> = ({ settings, onPrincipleChange }) => {
       
       const updatedPrinciples = [...principles, newPrinciple];
       setPrinciples(updatedPrinciples);
-      storage.addPrinciple(newPrinciple);
+      storage.addPrinciple(newPrinciple, language);
       onPrincipleChange();
       
       setFormData({ content: '', category: '' });
@@ -81,7 +81,7 @@ const Journal: React.FC<JournalProps> = ({ settings, onPrincipleChange }) => {
         p.id === editingPrinciple.id ? updatedPrinciple : p
       );
       setPrinciples(updatedPrinciples);
-      storage.updatePrinciple(editingPrinciple.id, updatedPrinciple);
+      storage.updatePrinciple(editingPrinciple.id, updatedPrinciple, language);
       onPrincipleChange();
       
       setFormData({ content: '', category: '' });
@@ -93,7 +93,7 @@ const Journal: React.FC<JournalProps> = ({ settings, onPrincipleChange }) => {
     if (confirm(t('confirmDeletePrinciple', language))) {
       const updatedPrinciples = principles.filter(p => p.id !== id);
       setPrinciples(updatedPrinciples);
-      storage.deletePrinciple(id);
+      storage.deletePrinciple(id, language);
       onPrincipleChange();
     }
   };

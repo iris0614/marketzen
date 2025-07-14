@@ -4,8 +4,10 @@ const STORAGE_KEYS = {
   TRADES: 'investment_tracker_trades',
   SETTINGS: 'investment_tracker_settings',
   KEYWORDS: 'investment_tracker_keywords',
-  PRINCIPLES: 'investment_tracker_principles',
-  CATEGORIES: 'investment_tracker_categories',
+  PRINCIPLES_ZH: 'investment_tracker_principles_zh',
+  PRINCIPLES_EN: 'investment_tracker_principles_en',
+  CATEGORIES_ZH: 'investment_tracker_categories_zh',
+  CATEGORIES_EN: 'investment_tracker_categories_en',
 } as const;
 
 export const storage = {
@@ -104,9 +106,9 @@ export const storage = {
   },
 
   // Investment Principles
-  getPrinciples: (): InvestmentPrinciple[] => {
+  getPrinciples: (language: 'zh' | 'en' = 'zh'): InvestmentPrinciple[] => {
     try {
-      const data = localStorage.getItem(STORAGE_KEYS.PRINCIPLES);
+      const data = localStorage.getItem(language === 'zh' ? STORAGE_KEYS.PRINCIPLES_ZH : STORAGE_KEYS.PRINCIPLES_EN);
       return data ? JSON.parse(data) : [];
     } catch (error) {
       console.error('Error loading principles:', error);
@@ -114,39 +116,39 @@ export const storage = {
     }
   },
 
-  savePrinciples: (principles: InvestmentPrinciple[]): void => {
+  savePrinciples: (principles: InvestmentPrinciple[], language: 'zh' | 'en' = 'zh'): void => {
     try {
-      localStorage.setItem(STORAGE_KEYS.PRINCIPLES, JSON.stringify(principles));
+      localStorage.setItem(language === 'zh' ? STORAGE_KEYS.PRINCIPLES_ZH : STORAGE_KEYS.PRINCIPLES_EN, JSON.stringify(principles));
     } catch (error) {
       console.error('Error saving principles:', error);
     }
   },
 
-  addPrinciple: (principle: InvestmentPrinciple): void => {
-    const principles = storage.getPrinciples();
+  addPrinciple: (principle: InvestmentPrinciple, language: 'zh' | 'en' = 'zh'): void => {
+    const principles = storage.getPrinciples(language);
     principles.push(principle);
-    storage.savePrinciples(principles);
+    storage.savePrinciples(principles, language);
   },
 
-  updatePrinciple: (id: string, updates: Partial<InvestmentPrinciple>): void => {
-    const principles = storage.getPrinciples();
+  updatePrinciple: (id: string, updates: Partial<InvestmentPrinciple>, language: 'zh' | 'en' = 'zh'): void => {
+    const principles = storage.getPrinciples(language);
     const index = principles.findIndex(principle => principle.id === id);
     if (index !== -1) {
       principles[index] = { ...principles[index], ...updates, updatedAt: new Date().toISOString() };
-      storage.savePrinciples(principles);
+      storage.savePrinciples(principles, language);
     }
   },
 
-  deletePrinciple: (id: string): void => {
-    const principles = storage.getPrinciples();
+  deletePrinciple: (id: string, language: 'zh' | 'en' = 'zh'): void => {
+    const principles = storage.getPrinciples(language);
     const filteredPrinciples = principles.filter(principle => principle.id !== id);
-    storage.savePrinciples(filteredPrinciples);
+    storage.savePrinciples(filteredPrinciples, language);
   },
 
   // Categories
   getCategories: (language: 'zh' | 'en' = 'zh'): PrincipleCategory[] => {
     try {
-      const data = localStorage.getItem(STORAGE_KEYS.CATEGORIES);
+      const data = localStorage.getItem(language === 'zh' ? STORAGE_KEYS.CATEGORIES_ZH : STORAGE_KEYS.CATEGORIES_EN);
       if (data) {
         return JSON.parse(data);
       }
@@ -226,17 +228,17 @@ export const storage = {
     }
   },
 
-  saveCategories: (categories: PrincipleCategory[]): void => {
+  saveCategories: (categories: PrincipleCategory[], language: 'zh' | 'en' = 'zh'): void => {
     try {
-      localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(categories));
+      localStorage.setItem(language === 'zh' ? STORAGE_KEYS.CATEGORIES_ZH : STORAGE_KEYS.CATEGORIES_EN, JSON.stringify(categories));
     } catch (error) {
       console.error('Error saving categories:', error);
     }
   },
 
-  addCategory: (category: PrincipleCategory): void => {
-    const categories = storage.getCategories();
+  addCategory: (category: PrincipleCategory, language: 'zh' | 'en' = 'zh'): void => {
+    const categories = storage.getCategories(language);
     categories.push(category);
-    storage.saveCategories(categories);
+    storage.saveCategories(categories, language);
   },
 }; 
