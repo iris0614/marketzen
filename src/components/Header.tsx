@@ -35,7 +35,7 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageChange }) => {
           </Link>
 
           {/* Navigation */}
-          <nav className="hidden md:flex items-center space-x-1">
+          <nav className="flex items-center space-x-1 w-auto">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
