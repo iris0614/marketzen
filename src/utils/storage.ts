@@ -144,41 +144,82 @@ export const storage = {
   },
 
   // Categories
-  getCategories: (): PrincipleCategory[] => {
+  getCategories: (language: 'zh' | 'en' = 'zh'): PrincipleCategory[] => {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.CATEGORIES);
-      return data ? JSON.parse(data) : [
-        {
-          id: 'risk-management',
-          name: '风险管理',
-          color: '#ef4444',
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: 'mindset',
-          name: '心态纪律',
-          color: '#3b82f6',
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: 'entry-strategy',
-          name: '入场策略',
-          color: '#10b981',
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: 'exit-strategy',
-          name: '出场策略',
-          color: '#f59e0b',
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: 'position-sizing',
-          name: '仓位管理',
-          color: '#8b5cf6',
-          createdAt: new Date().toISOString(),
-        },
-      ];
+      if (data) {
+        return JSON.parse(data);
+      }
+      
+      // Default categories based on language
+      const defaultCategories = {
+        zh: [
+          {
+            id: 'risk-management',
+            name: '风险管理',
+            color: '#ef4444',
+            createdAt: new Date().toISOString(),
+          },
+          {
+            id: 'mindset',
+            name: '心态纪律',
+            color: '#3b82f6',
+            createdAt: new Date().toISOString(),
+          },
+          {
+            id: 'entry-strategy',
+            name: '入场策略',
+            color: '#10b981',
+            createdAt: new Date().toISOString(),
+          },
+          {
+            id: 'exit-strategy',
+            name: '出场策略',
+            color: '#f59e0b',
+            createdAt: new Date().toISOString(),
+          },
+          {
+            id: 'position-sizing',
+            name: '仓位管理',
+            color: '#8b5cf6',
+            createdAt: new Date().toISOString(),
+          },
+        ],
+        en: [
+          {
+            id: 'risk-management',
+            name: 'Risk Management',
+            color: '#ef4444',
+            createdAt: new Date().toISOString(),
+          },
+          {
+            id: 'mindset',
+            name: 'Mindset & Discipline',
+            color: '#3b82f6',
+            createdAt: new Date().toISOString(),
+          },
+          {
+            id: 'entry-strategy',
+            name: 'Entry Strategy',
+            color: '#10b981',
+            createdAt: new Date().toISOString(),
+          },
+          {
+            id: 'exit-strategy',
+            name: 'Exit Strategy',
+            color: '#f59e0b',
+            createdAt: new Date().toISOString(),
+          },
+          {
+            id: 'position-sizing',
+            name: 'Position Sizing',
+            color: '#8b5cf6',
+            createdAt: new Date().toISOString(),
+          },
+        ]
+      };
+      
+      return defaultCategories[language];
     } catch (error) {
       console.error('Error loading categories:', error);
       return [];

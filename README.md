@@ -1,113 +1,94 @@
 # MarketZen
 
-A minimalist, intuitive, and efficient investment trading record tool focused on macro background analysis, trade review, and a self-evolving investment decision support system.
+> You can directly access the official deployment of MarketZen app:  
+> **[https://marketzen-app.vercel.app](https://marketzen-app.vercel.app)**
 
-## Core Design Philosophy
+---
 
-### Simplicity
-- Generous whitespace, content-focused
-- Avoid unnecessary decoration and borders
-- Clear information hierarchy
+## Introduction
 
-### Intuitive
-- Features and operations follow user intuition
-- No learning curve
-- Inspired by Apple design language
+MarketZen is a minimalist, intuitive, and efficient investment trading record tool focused on macro background analysis, trade review, and a self-evolving investment decision support system.
+This project supports multiple languages (Chinese and English) and is suitable for global investors.
 
-### Efficient
-- Fast recording and review
-- Key information at a glance
-- Mobile-friendly
+---
 
-## Key Features
+## Features
 
-- **Welcome Page**: Elegant animation, bilingual support, Zen-inspired design
-- **Dashboard**: Key metrics (PnL, win rate, positions), categorized trades, clear trade info
-- **New/Edit Trade**: Record macro background, trade logic, details, plans, and review
-- **Investment Journal**: Core feature for evolving your investment principles, with card-based design, categorization, and trade linkage
-- **Review & Analysis**: Filter trades by macro keywords, search, multi-filter, and statistics
-- **Settings**: Language and currency options
+- **Investment Trading Records**: Easily record every trade with support for multiple asset types
+- **Principles & Rules Management**: Customize and manage your investment principles and trading rules
+- **Data Visualization**: Rich charts and statistics to help you gain insights into investment performance
+- **Multi-language Support**: One-click switching between Chinese and English interfaces
+- **Local Storage**: Data security with privacy protection
 
-## Optimized User Journey
+---
 
-1. **Think**: Write down core principles in the Investment Journal
-2. **Plan**: Record trade background and plan in New Trade
-3. **Execute**: Complete trade with your broker
-4. **Review**: Fill in trade review and summary
-5. **Grow**: Extract new principles from reviews and link them to trades
+## Online Experience
 
-## Tech Stack
+You can directly access the official deployment of MarketZen app:
 
-- **Frontend**: React 18 + TypeScript
-- **Build Tool**: Vite
-- **Styling**: Tailwind CSS
-- **Icons**: Lucide React
-- **Routing**: React Router DOM
-- **Data Storage**: Local Storage (pure frontend, no backend)
+**[https://marketzen-app.vercel.app](https://marketzen-app.vercel.app)**
+
+---
 
 ## Quick Start
 
-### 1. Install Dependencies
-```bash
-npm install
-```
+1. **Online Experience**  
+   Direct access: [https://marketzen-app.vercel.app](https://marketzen-app.vercel.app)
 
-### 2. Start the Development Server
-```bash
-npm run dev
-```
+2. **Local Development**
+   ```bash
+   git clone https://github.com/iris0614/marketzen.git
+   cd marketzen
+   npm install
+   npm run dev
+   ```
+   Open your browser and visit `http://localhost:3000`
 
-The app will be available at the local address shown in your terminal (usually http://localhost:3000/).
+---
 
-### 3. Build for Production
-```bash
-npm run build
-```
+## Main Pages
 
-### 4. Preview Production Build Locally
-```bash
-npm run preview
-```
+- **Dashboard**: Investment overview and key statistics
+- **Journal**: Investment principles and trading rules management (English version content is fully in English)
+- **Review**: Trade review and experience summary
+- **Settings**: Preferences and language switching
 
-## Project Structure
+---
 
-```
-src/
-├── components/      # Reusable UI components
-├── pages/           # Page components (Welcome, Dashboard, TradeForm, Journal, Review, Settings)
-├── types/           # TypeScript type definitions
-├── utils/           # Utility functions (storage, calculations, demo data)
-├── i18n/            # Internationalization
-└── App.tsx          # Main app component
-```
+## Deployment
 
-## Design Features
+This project is automatically deployed through Vercel with one-click deployment support.
+For custom domain configuration, please refer to the "Custom Domain" section below.
 
-- **Typography**: Noto Serif SC (Chinese) + Serif (English)
-- **Color Scheme**: Warm off-white background (#F7F7F5), dark gray text (#37352F), blue accent (#2F5FD5), green/red for PnL
-- **Responsive**: Mobile-first, adapts to all screen sizes
-- **Data Storage**: Browser local storage, no backend required
+---
 
-## Core Value
+## Custom Domain
 
-MarketZen's core value lies in its narrative and self-evolving capability. It helps you:
+To set up a custom domain like `marketzen.com`, you need to meet the following requirements:
 
-1. **Easily record the story** behind each trade
-2. **Conveniently review** trades by keyword
-3. **Learn and grow** through trade reviews
-4. **Condense wisdom** into reusable investment principles
-5. **Continuously improve** your decision-making system
+1. **You must own (register) the domain**  
+   - You need to purchase and own `marketzen.com` from a domain registrar (such as Alibaba Cloud, Tencent Cloud, GoDaddy, Namecheap, etc.).
 
-## Investment Journal Details
+2. **Bind the domain to your Vercel project**  
+   - Add the custom domain in the Vercel dashboard or via command line (you tried this before, but got a permission error, indicating you don't own this domain yet).
 
-- **Principle Cards**: Bold for main content, color/icon for source, trade linkage for review-derived principles
-- **Categories**: Risk management, discipline, entry/exit strategies, position sizing
-- **Extraction Flow**: Summarize in review, extract as principle, categorize, and auto-link to trade
+3. **Configure DNS resolution**  
+   - In your domain registrar's backend, point the domain's DNS records to the CNAME or A records provided by Vercel.
 
-## Local Usage Only
+4. **Wait for DNS to take effect**  
+   - Usually takes a few minutes to several hours.
 
-> **Note:** This project is a pure frontend application. There is no backend or online deployment included by default. All data is stored in your browser's local storage. To use the app, follow the Quick Start instructions above to run it locally.
+**If you just want a memorable free domain**  
+You can use Vercel's subdomain, such as  
+**[https://marketzen-app.vercel.app](https://marketzen-app.vercel.app)**  
+This has been successfully bound and can be used directly!
+
+---
 
 ## License
 
-MIT License 
+MIT License
+
+---
+
+**For detailed operation guidance or any suggestions, feel free to create an issue or PR!** 

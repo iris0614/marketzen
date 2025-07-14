@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { InvestmentPrinciple, PrincipleCategory, AppSettings } from '../types';
 import { storage } from '../utils/storage';
 import { generateId } from '../utils/calculations';
-import { demoPrinciples, demoCategories } from '../utils/demoData';
+import { getDemoPrinciples, getDemoCategories } from '../utils/demoData';
 import { t } from '../i18n';
 import { Plus, Edit, Trash2, BookOpen, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -26,22 +26,22 @@ const Journal: React.FC<JournalProps> = ({ settings, onPrincipleChange }) => {
 
   useEffect(() => {
     let savedPrinciples = storage.getPrinciples();
-    let savedCategories = storage.getCategories();
+    let savedCategories = storage.getCategories(language);
     
-    // If no data exists, load demo data
+    // If no data exists, load demo data based on language
     if (savedPrinciples.length === 0) {
-      savedPrinciples = demoPrinciples;
-      storage.savePrinciples(demoPrinciples);
+      savedPrinciples = getDemoPrinciples(language);
+      storage.savePrinciples(savedPrinciples);
     }
     
     if (savedCategories.length === 0) {
-      savedCategories = demoCategories;
-      storage.saveCategories(demoCategories);
+      savedCategories = getDemoCategories(language);
+      storage.saveCategories(savedCategories);
     }
     
     setPrinciples(savedPrinciples);
     setCategories(savedCategories);
-  }, []);
+  }, [language]);
 
   const filteredPrinciples = selectedCategory === 'all' 
     ? principles 
