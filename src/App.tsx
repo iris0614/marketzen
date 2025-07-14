@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { Trade, AppSettings } from './types';
 import { storage } from './utils/storage';
@@ -21,6 +21,7 @@ function AppContent() {
   const [settings, setSettings] = useState<AppSettings>(storage.getSettings());
   const [trades, setTrades] = useState<Trade[]>([]);
   const [stats, setStats] = useState(calculatePortfolioStats([]));
+  const location = useLocation();
 
   useEffect(() => {
     const savedTrades = storage.getTrades();
@@ -74,85 +75,88 @@ function AppContent() {
   };
 
   return (
-    <Router>
-      <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50">
+      {/* 只在非首页显示Header */}
+      {location.pathname !== '/' && (
         <Header 
           language={settings.language}
           onLanguageChange={handleLanguageChange}
         />
-        <main className="container mx-auto px-4 py-6 max-w-6xl">
-          <Routes>
-            <Route path="/" element={<Welcome key={settings.language} />} />
-            <Route 
-              path="/dashboard" 
-              element={
-                <Dashboard 
-                  trades={trades}
-                  stats={stats}
-                  settings={settings}
-                  onUpdateTrade={handleUpdateTrade}
-                  onDeleteTrade={handleDeleteTrade}
-                />
-              } 
-            />
-            <Route 
-              path="/new" 
-              element={
-                <TradeForm 
-                  settings={settings}
-                  onSave={handleAddTrade}
-                />
-              } 
-            />
-            <Route 
-              path="/edit/:id" 
-              element={
-                <TradeForm 
-                  settings={settings}
-                  trades={trades}
-                  onSave={(trade: Trade) => handleUpdateTrade(trade.id, trade)}
-                />
-              } 
-            />
-            <Route 
-              path="/journal" 
-              element={
-                <Journal 
-                  settings={settings}
-                  onPrincipleChange={handlePrincipleChange}
-                />
-              } 
-            />
-            <Route 
-              path="/review" 
-              element={
-                <Review 
-                  trades={trades}
-                  stats={stats}
-                  settings={settings}
-                />
-              } 
-            />
-            <Route 
-              path="/settings" 
-              element={
-                <Settings 
-                  settings={settings}
-                  onUpdate={handleUpdateSettings}
-                />
-              } 
-            />
-          </Routes>
-        </main>
-      </div>
-    </Router>
+      )}
+      <main className="container mx-auto px-4 py-6 max-w-6xl">
+        <Routes>
+          <Route path="/" element={<Welcome key={settings.language} />} />
+          <Route 
+            path="/dashboard" 
+            element={
+              <Dashboard 
+                trades={trades}
+                stats={stats}
+                settings={settings}
+                onUpdateTrade={handleUpdateTrade}
+                onDeleteTrade={handleDeleteTrade}
+              />
+            } 
+          />
+          <Route 
+            path="/new" 
+            element={
+              <TradeForm 
+                settings={settings}
+                onSave={handleAddTrade}
+              />
+            } 
+          />
+          <Route 
+            path="/edit/:id" 
+            element={
+              <TradeForm 
+                settings={settings}
+                trades={trades}
+                onSave={(trade: Trade) => handleUpdateTrade(trade.id, trade)}
+              />
+            } 
+          />
+          <Route 
+            path="/journal" 
+            element={
+              <Journal 
+                settings={settings}
+                onPrincipleChange={handlePrincipleChange}
+              />
+            } 
+          />
+          <Route 
+            path="/review" 
+            element={
+              <Review 
+                trades={trades}
+                stats={stats}
+                settings={settings}
+              />
+            } 
+          />
+          <Route 
+            path="/settings" 
+            element={
+              <Settings 
+                settings={settings}
+                onUpdate={handleUpdateSettings}
+              />
+            } 
+          />
+        </Routes>
+      </main>
+    </div>
   );
 }
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AppContent />
+      <Router>
+        <AppContent />
+      </Router>
     </QueryClientProvider>
   );
 }
