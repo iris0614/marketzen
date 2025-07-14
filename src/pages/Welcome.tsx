@@ -55,14 +55,7 @@ const Welcome: React.FC = () => {
   // 渲染整句动画文本
   const renderAnimatedText = (text: string, isEnglish: boolean = false, delay: number = 0) => (
     <div style={fadeInStyle(delay)}>
-      <span style={{ 
-        fontSize: '1.5rem', // 中英文字体大小保持一致
-        fontFamily: 'Noto Serif SC, serif', 
-        fontWeight: 500,
-        lineHeight: '1.6',
-        // whiteSpace: 'nowrap', // 移除，避免移动端溢出
-        display: 'block' // 每句话独占一行
-      }}>
+      <span className="font-serif font-medium leading-relaxed block text-base sm:text-lg md:text-xl lg:text-2xl">
         {text}
       </span>
     </div>
