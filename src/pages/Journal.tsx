@@ -4,7 +4,7 @@ import { storage } from '../utils/storage';
 import { generateId } from '../utils/calculations';
 import { getDemoPrinciples, getDemoCategories } from '../utils/demoData';
 import { t } from '../i18n';
-import { Plus, Edit, Trash2, BookOpen, ExternalLink } from 'lucide-react';
+import { Plus, Edit, Trash2, BookOpen, ExternalLink, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface JournalProps {
@@ -23,6 +23,8 @@ const Journal: React.FC<JournalProps> = ({ settings, onPrincipleChange }) => {
     content: '',
     category: '',
   });
+  const [showAddCategory, setShowAddCategory] = useState(false);
+  const [newCategory, setNewCategory] = useState({ name: '', color: '#6b7280' });
 
   useEffect(() => {
     let savedPrinciples = storage.getPrinciples(language);
@@ -112,6 +114,34 @@ const Journal: React.FC<JournalProps> = ({ settings, onPrincipleChange }) => {
     setFormData({ content: '', category: '' });
   };
 
+  // 新增分类
+  const handleAddCategory = () => {
+    if (!newCategory.name.trim()) return;
+    const id = generateId();
+    const category = {
+      id,
+      name: newCategory.name.trim(),
+      color: newCategory.color,
+      createdAt: new Date().toISOString(),
+    };
+    const updated = [...categories, category];
+    setCategories(updated);
+    storage.saveCategories(updated, language);
+    setShowAddCategory(false);
+    setNewCategory({ name: '', color: '#6b7280' });
+  };
+  // 删除分类
+  const handleDeleteCategory = (id: string) => {
+    if (!confirm(language === 'zh' ? '确定要删除该分类吗？' : 'Delete this category?')) return;
+    const updated = categories.filter(c => c.id !== id);
+    setCategories(updated);
+    storage.saveCategories(updated, language);
+    // 还需同步将所有引用该分类的原则的 category 字段置空
+    const updatedPrinciples = principles.map(p => p.category === id ? { ...p, category: '' } : p);
+    setPrinciples(updatedPrinciples);
+    storage.savePrinciples(updatedPrinciples, language);
+  };
+
   const getCategoryColor = (categoryId: string) => {
     const category = categories.find(c => c.id === categoryId);
     return category?.color || '#6b7280';
@@ -146,9 +176,48 @@ const Journal: React.FC<JournalProps> = ({ settings, onPrincipleChange }) => {
       <div className="flex flex-col lg:flex-row gap-6">
         <div className="lg:w-64">
           <div className="card p-4">
-            <h3 className="text-sm font-semibold text-gray-900 mb-3">
-              {t('category', language)}
-            </h3>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-semibold text-gray-900">
+                {t('category', language)}
+              </h3>
+              <button
+                className="btn-secondary btn-xs flex items-center"
+                onClick={() => setShowAddCategory(true)}
+                title={language === 'zh' ? '新增分类' : 'Add Category'}
+              >
+                <Plus size={14} />
+              </button>
+            </div>
+            {/* 新增分类弹窗 */}
+            {showAddCategory && (
+              <div className="mb-3 p-3 rounded bg-gray-50 border border-gray-200 flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    className={`input flex-1 min-w-[120px] px-3 py-2 ${language === 'en' ? 'text-sm' : 'text-base'}`}
+                    placeholder={language === 'zh' ? '分类名' : 'Category Name'}
+                    value={newCategory.name}
+                    onChange={e => setNewCategory(c => ({ ...c, name: e.target.value }))}
+                  />
+                </div>
+                <div className="flex items-center gap-2 mt-2">
+                  <input
+                    type="color"
+                    value={newCategory.color}
+                    onChange={e => setNewCategory(c => ({ ...c, color: e.target.value }))}
+                    title={language === 'zh' ? '选择颜色' : 'Pick Color'}
+                    className="w-8 h-8 border-0 p-0 bg-transparent cursor-pointer"
+                    style={{ width: '100%' }}
+                  />
+                  <button className="btn-primary btn-xs" onClick={handleAddCategory}>
+                    {language === 'zh' ? '保存' : 'Save'}
+                  </button>
+                  <button className="btn-secondary btn-xs" onClick={() => setShowAddCategory(false)}>
+                    <X size={12} />
+                  </button>
+                </div>
+              </div>
+            )}
             <div className="space-y-2">
               <button
                 onClick={() => setSelectedCategory('all')}
@@ -161,21 +230,29 @@ const Journal: React.FC<JournalProps> = ({ settings, onPrincipleChange }) => {
                 {t('allCategories', language)}
               </button>
               {categories.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center space-x-2 ${
-                    selectedCategory === category.id
-                      ? 'bg-primary-50 text-primary-700'
-                      : 'text-gray-600 hover:bg-gray-50'
-                  }`}
-                >
-                  <div 
-                    className="w-3 h-3 rounded-full" 
-                    style={{ backgroundColor: category.color }}
-                  />
-                  <span>{category.name}</span>
-                </button>
+                <div key={category.id} className="flex items-center group">
+                  <button
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`flex-1 text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center space-x-2 ${
+                      selectedCategory === category.id
+                        ? 'bg-primary-50 text-primary-700'
+                        : 'text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    <div 
+                      className="w-3 h-3 rounded-full" 
+                      style={{ backgroundColor: category.color }}
+                    />
+                    <span>{category.name}</span>
+                  </button>
+                  <button
+                    className="ml-1 text-gray-400 hover:text-red-500 invisible group-hover:visible"
+                    title={language === 'zh' ? '删除分类' : 'Delete Category'}
+                    onClick={() => handleDeleteCategory(category.id)}
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
               ))}
             </div>
           </div>

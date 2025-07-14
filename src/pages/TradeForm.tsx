@@ -388,25 +388,42 @@ const TradeForm: React.FC<TradeFormProps> = ({ settings, trades = [], onSave }) 
                 {t('entryPrice', language)}
               </label>
               <input
-                type="number"
-                step="0.01"
+                type="text"
+                inputMode="decimal"
                 value={formData.entryPrice}
-                onChange={(e) => handleInputChange('entryPrice', Number(e.target.value))}
+                onChange={e => {
+                  let v = e.target.value.replace(/[^\d.]/g, '').replace(/(\..*)\./g, '$1');
+                  if (v.includes('.')) v = v.replace(/(\.\d{0,2}).*$/, '$1');
+                  handleInputChange('entryPrice', v);
+                }}
+                onBlur={e => {
+                  let v = e.target.value;
+                  v = v === '' ? '' : Number(v).toFixed(2);
+                  handleInputChange('entryPrice', v);
+                }}
                 className="input"
                 required
               />
             </div>
-
             {/* Amount */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 {t('amount', language)}
               </label>
               <input
-                type="number"
-                step="0.01"
+                type="text"
+                inputMode="decimal"
                 value={formData.amount}
-                onChange={(e) => handleInputChange('amount', Number(e.target.value))}
+                onChange={e => {
+                  let v = e.target.value.replace(/[^\d.]/g, '').replace(/(\..*)\./g, '$1');
+                  if (v.includes('.')) v = v.replace(/(\.\d{0,2}).*$/, '$1');
+                  handleInputChange('amount', v);
+                }}
+                onBlur={e => {
+                  let v = e.target.value;
+                  v = v === '' ? '' : Number(v).toFixed(2);
+                  handleInputChange('amount', v);
+                }}
                 className="input"
                 required
               />
@@ -427,24 +444,41 @@ const TradeForm: React.FC<TradeFormProps> = ({ settings, trades = [], onSave }) 
                 {t('takeProfit', language)}
               </label>
               <input
-                type="number"
-                step="0.01"
+                type="text"
+                inputMode="decimal"
                 value={formData.takeProfit}
-                onChange={(e) => handleInputChange('takeProfit', Number(e.target.value))}
+                onChange={e => {
+                  let v = e.target.value.replace(/[^\d.]/g, '').replace(/(\..*)\./g, '$1');
+                  if (v.includes('.')) v = v.replace(/(\.\d{0,2}).*$/, '$1');
+                  handleInputChange('takeProfit', v);
+                }}
+                onBlur={e => {
+                  let v = e.target.value;
+                  v = v === '' ? '' : Number(v).toFixed(2);
+                  handleInputChange('takeProfit', v);
+                }}
                 className="input"
               />
             </div>
-
             {/* Stop Loss */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 {t('stopLoss', language)}
               </label>
               <input
-                type="number"
-                step="0.01"
+                type="text"
+                inputMode="decimal"
                 value={formData.stopLoss}
-                onChange={(e) => handleInputChange('stopLoss', Number(e.target.value))}
+                onChange={e => {
+                  let v = e.target.value.replace(/[^\d.]/g, '').replace(/(\..*)\./g, '$1');
+                  if (v.includes('.')) v = v.replace(/(\.\d{0,2}).*$/, '$1');
+                  handleInputChange('stopLoss', v);
+                }}
+                onBlur={e => {
+                  let v = e.target.value;
+                  v = v === '' ? '' : Number(v).toFixed(2);
+                  handleInputChange('stopLoss', v);
+                }}
                 className="input"
               />
             </div>
