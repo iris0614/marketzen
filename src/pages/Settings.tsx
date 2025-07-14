@@ -11,7 +11,10 @@ interface SettingsProps {
 
 const Settings: React.FC<SettingsProps> = ({ settings, onUpdate }) => {
   const { language } = settings;
-  const [formData, setFormData] = useState<AppSettings>(settings);
+  const [formData, setFormData] = useState<AppSettings>({
+    ...settings,
+    totalPortfolio: settings.totalPortfolio === 0 ? '' : settings.totalPortfolio.toString(),
+  });
 
   const handleInputChange = (field: keyof AppSettings, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -19,7 +22,13 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onUpdate(formData);
+    // 确保总资金为两位小数的有效数值
+    let totalPortfolio = formData.totalPortfolio;
+    if (typeof totalPortfolio === 'string') {
+      totalPortfolio = totalPortfolio === '' || isNaN(Number(totalPortfolio)) ? 0 : Number(totalPortfolio);
+    }
+    totalPortfolio = Number(totalPortfolio).toFixed(2);
+    onUpdate({ ...formData, totalPortfolio: Number(totalPortfolio) });
   };
 
   // 导出数据
@@ -155,10 +164,25 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate }) => {
                 {t('totalPortfolio', language)}
               </label>
               <input
-                type="number"
-                step="0.01"
+                type="text"
+                inputMode="decimal"
                 value={formData.totalPortfolio}
-                onChange={(e) => handleInputChange('totalPortfolio', Number(e.target.value))}
+                onChange={e => {
+                  let value = e.target.value.replace(/[^\d.]/g, '');
+                  const parts = value.split('.');
+                  if (parts.length > 2) value = parts[0] + '.' + parts.slice(1).join('');
+                  if (parts[1]) value = parts[0] + '.' + parts[1].slice(0, 2);
+                  handleInputChange('totalPortfolio', value);
+                }}
+                onBlur={e => {
+                  let value = e.target.value;
+                  if (value === '' || isNaN(Number(value))) {
+                    handleInputChange('totalPortfolio', '');
+                  } else {
+                    handleInputChange('totalPortfolio', Number(value).toFixed(2));
+                  }
+                }}
+                placeholder="0.00"
                 className="input"
                 required
               />

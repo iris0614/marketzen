@@ -57,7 +57,7 @@ export type Language = 'zh' | 'en';
 
 export interface AppSettings {
   language: Language;
-  totalPortfolio: number;
+  totalPortfolio: string | number;
   currency: string;
 }
 

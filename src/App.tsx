@@ -83,7 +83,7 @@ function AppContent() {
           onLanguageChange={handleLanguageChange}
         />
       )}
-      <main className="container mx-auto px-4 py-6 max-w-6xl">
+      <main className="container mx-auto px-4 py-6 max-w-6xl w-full overflow-x-hidden">
         <Routes>
           <Route path="/" element={<Welcome key={settings.language} />} />
           <Route 

@@ -21,7 +21,7 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageChange }) => {
   ];
 
   return (
-    <header className="bg-white border-b border-gray-100 shadow-soft">
+    <header className="bg-white border-b border-gray-100 shadow-soft w-full overflow-x-hidden">
       <div className="container mx-auto px-4 max-w-6xl">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}

@@ -60,7 +60,7 @@ const Welcome: React.FC = () => {
         fontFamily: 'Noto Serif SC, serif', 
         fontWeight: 500,
         lineHeight: '1.6',
-        whiteSpace: 'nowrap', // 确保英文不换行
+        // whiteSpace: 'nowrap', // 移除，避免移动端溢出
         display: 'block' // 每句话独占一行
       }}>
         {text}
@@ -69,13 +69,13 @@ const Welcome: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-[#F7F7F5] flex items-center justify-center px-4">
+    <div className="min-h-screen w-full overflow-x-hidden bg-[#F7F7F5] flex items-center justify-center px-4">
       {/* 微妙的背景纹理效果 */}
       <div className="absolute inset-0 opacity-30">
         <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-[#FAF9F7]"></div>
       </div>
       
-      <div className={`relative z-10 text-center max-w-2xl transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+      <div className={`relative z-10 text-center max-w-2xl w-full sm:w-auto transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
         {/* 网站Logo和名称 */}
         <div className="mb-16">
           <div className="flex items-center justify-center mb-8">

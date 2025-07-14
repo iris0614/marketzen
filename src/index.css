@@ -6,12 +6,14 @@
 @layer base {
   html {
     font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+    overflow-x: hidden;
   }
   
   body {
     @apply bg-gray-50 text-gray-900 antialiased;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
   }
 }
 
