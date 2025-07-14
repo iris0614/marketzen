@@ -5,6 +5,8 @@ import { generateId } from '../utils/calculations';
 import { storage } from '../utils/storage';
 import { t } from '../i18n';
 import { ArrowLeft, Save, X, Lightbulb } from 'lucide-react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 interface TradeFormProps {
   settings: AppSettings;
@@ -21,6 +23,9 @@ const TradeForm: React.FC<TradeFormProps> = ({ settings, trades = [], onSave }) 
   const existingTrade = isEditing ? trades.find(t => t.id === id) : null;
   
   const [formData, setFormData] = useState<TradeFormData>({
+    tradeDate: '',
+    vixIndex: 0,
+    instrumentType: language === 'zh' ? '现货' : 'spot',
     asset: '',
     direction: 'long',
     entryPrice: 0,
@@ -40,10 +45,14 @@ const TradeForm: React.FC<TradeFormProps> = ({ settings, trades = [], onSave }) 
     category: '',
   });
   const [categories] = useState(() => storage.getCategories(language));
+  const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     if (existingTrade) {
       setFormData({
+        tradeDate: existingTrade.tradeDate || '',
+        vixIndex: existingTrade.vixIndex ?? 0,
+        instrumentType: existingTrade.instrumentType || (language === 'zh' ? '现货' : 'spot'),
         asset: existingTrade.asset,
         direction: existingTrade.direction,
         entryPrice: existingTrade.entryPrice,
@@ -55,7 +64,7 @@ const TradeForm: React.FC<TradeFormProps> = ({ settings, trades = [], onSave }) 
         thesis: existingTrade.thesis,
       });
     }
-  }, [existingTrade]);
+  }, [existingTrade, language]);
 
   const handleInputChange = (field: keyof TradeFormData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -80,8 +89,31 @@ const TradeForm: React.FC<TradeFormProps> = ({ settings, trades = [], onSave }) 
     }));
   };
 
+  const validateForm = () => {
+    const errors: { [key: string]: string } = {};
+    if (!formData.tradeDate) {
+      errors.tradeDate = t('tradeDateRequired', language);
+    }
+    if (
+      formData.vixIndex === undefined ||
+      formData.vixIndex === null ||
+      isNaN(Number(formData.vixIndex)) ||
+      Number(formData.vixIndex) < 0 ||
+      Number(formData.vixIndex) > 100
+    ) {
+      errors.vixIndex = t('vixIndexInvalid', language);
+    }
+    if (!formData.instrumentType) {
+      errors.instrumentType = t('instrumentTypeRequired', language);
+    }
+    return errors;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const errors = validateForm();
+    setFormErrors(errors);
+    if (Object.keys(errors).length > 0) return;
     
     const trade: Trade = {
       id: existingTrade?.id || generateId(),
@@ -261,8 +293,47 @@ const TradeForm: React.FC<TradeFormProps> = ({ settings, trades = [], onSave }) 
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
             {t('tradeDetails', language)}
           </h2>
-          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Trade Date */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t('tradeDate', language)}
+              </label>
+              <DatePicker
+                selected={formData.tradeDate ? new Date(formData.tradeDate) : null}
+                onChange={date => handleInputChange('tradeDate', date ? date.toISOString().slice(0, 10) : '')}
+                dateFormat="yyyy-MM-dd"
+                placeholderText={language === 'zh' ? '年/月/日' : 'YYYY/MM/DD'}
+                className="input w-full"
+                wrapperClassName="w-full"
+                popperPlacement="bottom-start"
+                isClearable
+                required
+              />
+              {formErrors.tradeDate && (
+                <div className="text-red-500 text-xs mt-1">{formErrors.tradeDate}</div>
+              )}
+            </div>
+            {/* VIX Index */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t('vixIndex', language)}
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                min={0}
+                max={100}
+                value={formData.vixIndex}
+                onChange={e => handleInputChange('vixIndex', Number(Number(e.target.value).toFixed(2)))}
+                className="input"
+                required
+                placeholder={t('vixIndexPlaceholder', language)}
+              />
+              {formErrors.vixIndex && (
+                <div className="text-red-500 text-xs mt-1">{formErrors.vixIndex}</div>
+              )}
+            </div>
             {/* Asset */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -277,7 +348,25 @@ const TradeForm: React.FC<TradeFormProps> = ({ settings, trades = [], onSave }) 
                 required
               />
             </div>
-
+            {/* Instrument Type */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t('instrumentType', language)}
+              </label>
+              <select
+                value={formData.instrumentType}
+                onChange={e => handleInputChange('instrumentType', e.target.value)}
+                className="input"
+                required
+              >
+                <option value="">{t('instrumentTypePlaceholder', language)}</option>
+                <option value={language === 'zh' ? '现货' : 'spot'}>{t('instrumentTypeSpot', language)}</option>
+                <option value={language === 'zh' ? '合约' : 'futures'}>{t('instrumentTypeFutures', language)}</option>
+              </select>
+              {formErrors.instrumentType && (
+                <div className="text-red-500 text-xs mt-1">{formErrors.instrumentType}</div>
+              )}
+            </div>
             {/* Direction */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">

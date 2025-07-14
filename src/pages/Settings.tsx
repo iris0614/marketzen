@@ -3,6 +3,10 @@ import { AppSettings } from '../types';
 import { t } from '../i18n';
 import { Settings as SettingsIcon, Save } from 'lucide-react';
 import { storage } from '../utils/storage';
+// @ts-ignore
+import zhSampleCsv from '../assets/import-sample-zh.csv';
+// @ts-ignore
+import enSampleCsv from '../assets/import-sample-en.csv';
 
 interface SettingsProps {
   settings: AppSettings;

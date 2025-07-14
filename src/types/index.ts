@@ -14,6 +14,9 @@ export interface Trade {
   postMortemNotes?: string;
   createdAt: string;
   updatedAt: string;
+  tradeDate: string; // 交易日期 YYYY-MM-DD
+  vixIndex: number;  // VIX指数 0-100, 保留2位小数
+  instrumentType: '现货' | '合约' | 'spot' | 'futures'; // 交易类型
 }
 
 export interface TradeFormData {
@@ -26,6 +29,9 @@ export interface TradeFormData {
   stopLoss?: number;
   macroContext: string[];
   thesis: string;
+  tradeDate: string;
+  vixIndex: number;
+  instrumentType: '现货' | '合约' | 'spot' | 'futures';
 }
 
 export interface TradeResult {
