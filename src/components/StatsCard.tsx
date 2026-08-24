@@ -17,23 +17,23 @@ const StatsCard: React.FC<StatsCardProps> = ({
   icon: Icon,
 }) => {
   return (
-    <div className="card p-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-medium text-gray-600 mb-1">{title}</p>
-          <p className="text-2xl font-bold text-gray-900">{value}</p>
-          <p className={`text-sm font-medium ${
-            isPositive ? 'text-success-600' : 'text-danger-600'
+    <div className="card p-5 sm:p-6">
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-ink-muted mb-1">{title}</p>
+          <p className="text-2xl font-serif text-ink truncate">{value}</p>
+          <p className={`text-sm font-medium mt-1 ${
+            isPositive ? 'text-sage-600' : 'text-rose-600'
           }`}>
             {change}
           </p>
         </div>
-        <div className={`p-3 rounded-lg ${
-          isPositive ? 'bg-success-50' : 'bg-danger-50'
+        <div className={`p-3 rounded-[12px] shrink-0 ${
+          isPositive ? 'bg-sage-50' : 'bg-rose-50'
         }`}>
-          <Icon 
-            size={24} 
-            className={isPositive ? 'text-success-600' : 'text-danger-600'} 
+          <Icon
+            size={22}
+            className={isPositive ? 'text-sage-600' : 'text-rose-600'}
           />
         </div>
       </div>
@@ -41,4 +41,4 @@ const StatsCard: React.FC<StatsCardProps> = ({
   );
 };
 
-export default StatsCard; 
+export default StatsCard;

@@ -1,27 +1,48 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { Trade, AppSettings } from './types';
 import { storage } from './utils/storage';
 import { calculatePortfolioStats } from './utils/calculations';
-import { t } from './i18n';
 
-// Components
 import Header from './components/Header';
+import ErrorBoundary from './components/ErrorBoundary';
 import Welcome from './pages/Welcome';
 import Dashboard from './pages/Dashboard';
 import TradeForm from './pages/TradeForm';
 import Journal from './pages/Journal';
 import Review from './pages/Review';
 import Settings from './pages/Settings';
+import Notes from './pages/Notes';
+import Diary from './pages/Diary';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { retry: 1, refetchOnWindowFocus: false },
+  },
+});
+
+function AppLayout({
+  language,
+  onLanguageChange,
+}: {
+  language: AppSettings['language'];
+  onLanguageChange: (language: 'zh' | 'en') => void;
+}) {
+  return (
+    <>
+      <Header language={language} onLanguageChange={onLanguageChange} />
+      <main className="relative z-[1] container mx-auto px-4 py-8 max-w-6xl w-full overflow-x-hidden">
+        <Outlet />
+      </main>
+    </>
+  );
+}
 
 function AppContent() {
   const [settings, setSettings] = useState<AppSettings>(storage.getSettings());
   const [trades, setTrades] = useState<Trade[]>([]);
   const [stats, setStats] = useState(calculatePortfolioStats([]));
-  const location = useLocation();
 
   useEffect(() => {
     const savedTrades = storage.getTrades();
@@ -29,7 +50,10 @@ function AppContent() {
     setStats(calculatePortfolioStats(savedTrades));
   }, []);
 
-  // 让Header和Welcome页面语言切换同步
+  useEffect(() => {
+    document.documentElement.lang = settings.language === 'zh' ? 'zh-CN' : 'en';
+  }, [settings.language]);
+
   const handleLanguageChange = (language: 'zh' | 'en') => {
     setSettings((prev) => {
       const newSettings = { ...prev, language };
@@ -49,7 +73,7 @@ function AppContent() {
   };
 
   const handleUpdateTrade = (id: string, updates: Partial<Trade>) => {
-    const updatedTrades = trades.map(trade => 
+    const updatedTrades = trades.map(trade =>
       trade.id === id ? { ...trade, ...updates } : trade
     );
     setTrades(updatedTrades);
@@ -69,96 +93,111 @@ function AppContent() {
     storage.saveSettings(newSettings);
   };
 
-  const handlePrincipleChange = () => {
-    // This function is called when principles are added/updated/deleted
-    // We can add any additional logic here if needed
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* 只在非首页显示Header */}
-      {location.pathname !== '/' && (
-        <Header 
-          language={settings.language}
-          onLanguageChange={handleLanguageChange}
-        />
-      )}
-      <main className={`container mx-auto px-4 py-6 max-w-6xl w-full overflow-x-hidden ${location.pathname !== '/' ? 'pt-20' : ''}` }>
+    <ErrorBoundary language={settings.language}>
+      <div className="min-h-screen bg-paper relative">
         <Routes>
-          <Route path="/" element={<Welcome key={settings.language} />} />
-          <Route 
-            path="/dashboard" 
+          <Route
+            path="/"
             element={
-              <Dashboard 
-                trades={trades}
-                stats={stats}
-                settings={settings}
-                onUpdateTrade={handleUpdateTrade}
-                onDeleteTrade={handleDeleteTrade}
+              <Welcome
+                language={settings.language}
+                onLanguageChange={handleLanguageChange}
               />
-            } 
+            }
           />
-          <Route 
-            path="/new" 
+          <Route
             element={
-              <TradeForm 
-                settings={settings}
-                onSave={handleAddTrade}
+              <AppLayout
+                language={settings.language}
+                onLanguageChange={handleLanguageChange}
               />
-            } 
-          />
-          <Route 
-            path="/edit/:id" 
-            element={
-              <TradeForm 
-                settings={settings}
-                trades={trades}
-                onSave={(trade: Trade) => handleUpdateTrade(trade.id, trade)}
-              />
-            } 
-          />
-          <Route 
-            path="/journal" 
-            element={
-              <Journal 
-                settings={settings}
-                onPrincipleChange={handlePrincipleChange}
-              />
-            } 
-          />
-          <Route 
-            path="/review" 
-            element={
-              <Review 
-                trades={trades}
-                stats={stats}
-                settings={settings}
-              />
-            } 
-          />
-          <Route 
-            path="/settings" 
-            element={
-              <Settings 
-                settings={settings}
-                onUpdate={handleUpdateSettings}
-              />
-            } 
-          />
+            }
+          >
+            <Route
+              path="/dashboard"
+              element={
+                <Dashboard
+                  trades={trades}
+                  stats={stats}
+                  settings={settings}
+                  onUpdateTrade={handleUpdateTrade}
+                  onDeleteTrade={handleDeleteTrade}
+                />
+              }
+            />
+            <Route
+              path="/new"
+              element={
+                <TradeForm
+                  settings={settings}
+                  onSave={handleAddTrade}
+                />
+              }
+            />
+            <Route
+              path="/edit/:id"
+              element={
+                <TradeForm
+                  settings={settings}
+                  trades={trades}
+                  onSave={(trade: Trade) => handleUpdateTrade(trade.id, trade)}
+                />
+              }
+            />
+            <Route
+              path="/journal"
+              element={
+                <Journal
+                  settings={settings}
+                  onPrincipleChange={() => undefined}
+                />
+              }
+            />
+            <Route
+              path="/notes"
+              element={<Notes settings={settings} />}
+            />
+            <Route
+              path="/diary"
+              element={<Diary settings={settings} />}
+            />
+            <Route
+              path="/review"
+              element={
+                <Review
+                  trades={trades}
+                  stats={stats}
+                  settings={settings}
+                  onUpdateTrade={handleUpdateTrade}
+                  onDeleteTrade={handleDeleteTrade}
+                />
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <Settings
+                  settings={settings}
+                  onUpdate={handleUpdateSettings}
+                />
+              }
+            />
+          </Route>
         </Routes>
-      </main>
-    </div>
+      </div>
+    </ErrorBoundary>
   );
 }
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Router>
+      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <AppContent />
       </Router>
     </QueryClientProvider>
   );
 }
 
-export default App; 
+export default App;

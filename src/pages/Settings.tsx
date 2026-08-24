@@ -1,12 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AppSettings } from '../types';
 import { t } from '../i18n';
 import { Settings as SettingsIcon, Save } from 'lucide-react';
 import { storage } from '../utils/storage';
-// @ts-ignore
-import zhSampleCsv from '../assets/import-sample-zh.csv';
-// @ts-ignore
-import enSampleCsv from '../assets/import-sample-en.csv';
 
 interface SettingsProps {
   settings: AppSettings;
@@ -19,23 +15,30 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate }) => {
     ...settings,
     totalPortfolio: settings.totalPortfolio === 0 ? '' : settings.totalPortfolio.toString(),
   });
+  const [saved, setSaved] = useState(false);
 
-  const handleInputChange = (field: keyof AppSettings, value: any) => {
+  useEffect(() => {
+    setFormData({
+      ...settings,
+      totalPortfolio: settings.totalPortfolio === 0 ? '' : settings.totalPortfolio.toString(),
+    });
+  }, [settings]);
+
+  const handleInputChange = (field: keyof AppSettings, value: string | number) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    setSaved(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // 确保总资金为两位小数的有效数值
     let totalPortfolio = formData.totalPortfolio;
     if (typeof totalPortfolio === 'string') {
       totalPortfolio = totalPortfolio === '' || isNaN(Number(totalPortfolio)) ? 0 : Number(totalPortfolio);
     }
-    totalPortfolio = Number(totalPortfolio).toFixed(2);
-    onUpdate({ ...formData, totalPortfolio: Number(totalPortfolio) });
+    onUpdate({ ...formData, totalPortfolio: Number(Number(totalPortfolio).toFixed(2)) });
+    setSaved(true);
   };
 
-  // 导出数据
   const handleExport = () => {
     const data = {
       trades: storage.getTrades(),
@@ -45,6 +48,7 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate }) => {
       principles_en: storage.getPrinciples('en'),
       categories_zh: storage.getCategories('zh'),
       categories_en: storage.getCategories('en'),
+      diary: storage.getDiaryEntries(),
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -55,7 +59,6 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate }) => {
     URL.revokeObjectURL(url);
   };
 
-  // 导入数据
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -70,39 +73,39 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate }) => {
         if (data.principles_en) storage.savePrinciples(data.principles_en, 'en');
         if (data.categories_zh) storage.saveCategories(data.categories_zh, 'zh');
         if (data.categories_en) storage.saveCategories(data.categories_en, 'en');
+        if (data.diary) storage.saveDiaryEntries(data.diary);
         window.location.reload();
-      } catch (err) {
-        alert('导入失败，文件格式不正确！');
+      } catch {
+        window.alert(t('importFailed', language));
       }
     };
     reader.readAsText(file);
+    e.target.value = '';
   };
 
   return (
     <div className="max-w-2xl mx-auto">
-      {/* Header */}
       <div className="flex items-center space-x-3 mb-6">
-        <SettingsIcon size={24} className="text-gray-500" />
-        <h1 className="text-2xl font-bold text-gray-900">
+        <SettingsIcon size={22} className="text-clay-500" />
+        <h1 className="page-title mb-0">
           {t('settings', language)}
         </h1>
       </div>
 
-      {/* 数据导出/导入功能 */}
       <div className="card p-6 mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          {language === 'zh' ? '数据备份与恢复' : 'Data Backup & Restore'}
+        <h2 className="section-title mb-4">
+          {t('dataBackup', language)}
         </h2>
-        <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex flex-col md:flex-row gap-3">
           <button
             type="button"
             className="btn-primary"
             onClick={handleExport}
           >
-            {language === 'zh' ? '导出数据' : 'Export Data'}
+            {t('exportData', language)}
           </button>
           <label className="btn-secondary cursor-pointer">
-            {language === 'zh' ? '导入数据' : 'Import Data'}
+            {t('importData', language)}
             <input
               type="file"
               accept="application/json"
@@ -111,20 +114,17 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate }) => {
             />
           </label>
         </div>
-        <p className="text-xs text-gray-500 mt-2">
-          {language === 'zh'
-            ? '导出后请妥善保存备份文件。导入数据会覆盖当前所有本地数据。'
-            : 'Please keep your backup file safe. Importing will overwrite all your current local data.'}
+        <p className="text-xs text-ink-faint mt-3 leading-relaxed">
+          {t('backupHint', language)}
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Language Settings */}
         <div className="card p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+          <h2 className="section-title mb-4">
             {t('language', language)}
           </h2>
-          
+
           <div className="space-y-3">
             <label className="flex items-center space-x-3">
               <input
@@ -133,13 +133,13 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate }) => {
                 value="zh"
                 checked={formData.language === 'zh'}
                 onChange={(e) => handleInputChange('language', e.target.value)}
-                className="text-primary-600 focus:ring-primary-500"
+                className="text-clay-600 focus:ring-clay-500"
               />
-              <span className="text-sm font-medium text-gray-700">
+              <span className="text-sm font-medium text-ink">
                 {t('chinese', language)}
               </span>
             </label>
-            
+
             <label className="flex items-center space-x-3">
               <input
                 type="radio"
@@ -147,24 +147,23 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate }) => {
                 value="en"
                 checked={formData.language === 'en'}
                 onChange={(e) => handleInputChange('language', e.target.value)}
-                className="text-primary-600 focus:ring-primary-500"
+                className="text-clay-600 focus:ring-clay-500"
               />
-              <span className="text-sm font-medium text-gray-700">
+              <span className="text-sm font-medium text-ink">
                 {t('english', language)}
               </span>
             </label>
           </div>
         </div>
 
-        {/* Portfolio Settings */}
         <div className="card p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+          <h2 className="section-title mb-4">
             {t('totalPortfolio', language)}
           </h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-ink-muted mb-2">
                 {t('totalPortfolio', language)}
               </label>
               <input
@@ -179,7 +178,7 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate }) => {
                   handleInputChange('totalPortfolio', value);
                 }}
                 onBlur={e => {
-                  let value = e.target.value;
+                  const value = e.target.value;
                   if (value === '' || isNaN(Number(value))) {
                     handleInputChange('totalPortfolio', '');
                   } else {
@@ -191,9 +190,9 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate }) => {
                 required
               />
             </div>
-            
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-ink-muted mb-2">
                 {t('currency', language)}
               </label>
               <select
@@ -211,8 +210,10 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate }) => {
           </div>
         </div>
 
-        {/* Submit */}
-        <div className="flex justify-end">
+        <div className="flex justify-end items-center gap-3">
+          {saved && (
+            <span className="text-sm text-sage-600">{t('settingsSaved', language)}</span>
+          )}
           <button
             type="submit"
             className="btn-primary flex items-center space-x-2"
@@ -226,4 +227,4 @@ const Settings: React.FC<SettingsProps> = ({ settings, onUpdate }) => {
   );
 };
 
-export default Settings; 
+export default Settings;

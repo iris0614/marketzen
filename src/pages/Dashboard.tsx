@@ -39,105 +39,77 @@ const Dashboard: React.FC<DashboardProps> = ({
       title: t('winRate', language),
       value: `${formatNumber(stats.winRate)}%`,
       change: `${stats.totalTrades} ${t('totalTrades', language)}`,
-      isPositive: stats.winRate >= 50,
+      isPositive: stats.totalTrades === 0 ? true : stats.winRate >= 50,
       icon: Target,
     },
     {
       title: t('openPositions', language),
       value: stats.openPositions.toString(),
-      change: `${formatNumber(stats.averageReturn)}% avg`,
+      change: `${formatNumber(stats.averageReturn)} ${t('averageReturn', language)}`,
       isPositive: true,
       icon: Activity,
     },
   ];
 
+  const list = activeTab === 'open' ? openTrades : closedTrades;
+
   return (
     <div className="space-y-6">
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {statsCards.map((card, index) => (
-          <StatsCard key={index} {...card} />
+        {statsCards.map((card) => (
+          <StatsCard key={card.title} {...card} />
         ))}
       </div>
 
-      {/* Tabs */}
-      <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
+      <div className="flex space-x-1 bg-paper-200 p-1 rounded-[12px] border border-paper-400">
         <button
+          type="button"
           onClick={() => setActiveTab('open')}
-          className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+          className={`flex-1 py-2 px-4 rounded-[10px] text-sm font-medium transition-colors ${
             activeTab === 'open'
-              ? 'bg-white text-gray-900 shadow-soft'
-              : 'text-gray-600 hover:text-gray-900'
+              ? 'bg-paper-50 text-ink shadow-soft'
+              : 'text-ink-muted hover:text-ink'
           }`}
         >
           {t('open', language)} ({openTrades.length})
         </button>
         <button
+          type="button"
           onClick={() => setActiveTab('closed')}
-          className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+          className={`flex-1 py-2 px-4 rounded-[10px] text-sm font-medium transition-colors ${
             activeTab === 'closed'
-              ? 'bg-white text-gray-900 shadow-soft'
-              : 'text-gray-600 hover:text-gray-900'
+              ? 'bg-paper-50 text-ink shadow-soft'
+              : 'text-ink-muted hover:text-ink'
           }`}
         >
           {t('closed', language)} ({closedTrades.length})
         </button>
       </div>
 
-      {/* Trades List */}
       <div className="space-y-4">
-        {activeTab === 'open' && (
-          <>
-            {openTrades.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="text-gray-400 text-lg mb-2">
-                  {t('noTrades', language)}
-                </div>
-                <p className="text-gray-500 text-sm">
-                  {language === 'zh' ? '开始记录你的第一笔交易' : 'Start recording your first trade'}
-                </p>
-              </div>
-            ) : (
-              openTrades.map(trade => (
-                <TradeCard
-                  key={trade.id}
-                  trade={trade}
-                  settings={settings}
-                  onUpdate={onUpdateTrade}
-                  onDelete={onDeleteTrade}
-                />
-              ))
-            )}
-          </>
-        )}
-
-        {activeTab === 'closed' && (
-          <>
-            {closedTrades.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="text-gray-400 text-lg mb-2">
-                  {language === 'zh' ? '暂无已平仓交易' : 'No closed trades yet'}
-                </div>
-                <p className="text-gray-500 text-sm">
-                  {language === 'zh' ? '平仓交易后会显示在这里' : 'Closed trades will appear here'}
-                </p>
-              </div>
-            ) : (
-              closedTrades.map(trade => (
-                <TradeCard
-                  key={trade.id}
-                  trade={trade}
-                  settings={settings}
-                  onUpdate={onUpdateTrade}
-                  onDelete={onDeleteTrade}
-                />
-              ))
-            )}
-          </>
+        {list.length === 0 ? (
+          <div className="text-center py-14 card">
+            <div className="font-serif text-xl text-ink-muted mb-2">
+              {activeTab === 'open' ? t('noTrades', language) : t('noClosedTrades', language)}
+            </div>
+            <p className="text-ink-faint text-sm">
+              {activeTab === 'open' ? t('startFirstTrade', language) : t('closedTradesHint', language)}
+            </p>
+          </div>
+        ) : (
+          list.map(trade => (
+            <TradeCard
+              key={trade.id}
+              trade={trade}
+              settings={settings}
+              onUpdate={onUpdateTrade}
+              onDelete={onDeleteTrade}
+            />
+          ))
         )}
       </div>
     </div>
   );
 };
 
-export default Dashboard; 
+export default Dashboard;

@@ -24,29 +24,28 @@ const Journal: React.FC<JournalProps> = ({ settings, onPrincipleChange }) => {
     category: '',
   });
   const [showAddCategory, setShowAddCategory] = useState(false);
-  const [newCategory, setNewCategory] = useState({ name: '', color: '#6b7280' });
+  const [newCategory, setNewCategory] = useState({ name: '', color: '#c17b5c' });
 
   useEffect(() => {
     let savedPrinciples = storage.getPrinciples(language);
     let savedCategories = storage.getCategories(language);
-    
-    // If no data exists, load demo data based on language
+
     if (savedPrinciples.length === 0) {
       savedPrinciples = getDemoPrinciples(language);
       storage.savePrinciples(savedPrinciples, language);
     }
-    
+
     if (savedCategories.length === 0) {
       savedCategories = getDemoCategories(language);
       storage.saveCategories(savedCategories, language);
     }
-    
+
     setPrinciples(savedPrinciples);
     setCategories(savedCategories);
   }, [language]);
 
-  const filteredPrinciples = selectedCategory === 'all' 
-    ? principles 
+  const filteredPrinciples = selectedCategory === 'all'
+    ? principles
     : principles.filter(p => p.category === selectedCategory);
 
   const handleAddPrinciple = () => {
@@ -59,12 +58,12 @@ const Journal: React.FC<JournalProps> = ({ settings, onPrincipleChange }) => {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
-      
+
       const updatedPrinciples = [...principles, newPrinciple];
       setPrinciples(updatedPrinciples);
       storage.addPrinciple(newPrinciple, language);
       onPrincipleChange();
-      
+
       setFormData({ content: '', category: '' });
       setShowAddForm(false);
     }
@@ -78,21 +77,21 @@ const Journal: React.FC<JournalProps> = ({ settings, onPrincipleChange }) => {
         category: formData.category,
         updatedAt: new Date().toISOString(),
       };
-      
-      const updatedPrinciples = principles.map(p => 
+
+      const updatedPrinciples = principles.map(p =>
         p.id === editingPrinciple.id ? updatedPrinciple : p
       );
       setPrinciples(updatedPrinciples);
       storage.updatePrinciple(editingPrinciple.id, updatedPrinciple, language);
       onPrincipleChange();
-      
+
       setFormData({ content: '', category: '' });
       setEditingPrinciple(null);
     }
   };
 
   const handleDeletePrinciple = (id: string) => {
-    if (confirm(t('confirmDeletePrinciple', language))) {
+    if (window.confirm(t('confirmDeletePrinciple', language))) {
       const updatedPrinciples = principles.filter(p => p.id !== id);
       setPrinciples(updatedPrinciples);
       storage.deletePrinciple(id, language);
@@ -114,12 +113,10 @@ const Journal: React.FC<JournalProps> = ({ settings, onPrincipleChange }) => {
     setFormData({ content: '', category: '' });
   };
 
-  // 新增分类
   const handleAddCategory = () => {
     if (!newCategory.name.trim()) return;
-    const id = generateId();
     const category = {
-      id,
+      id: generateId(),
       name: newCategory.name.trim(),
       color: newCategory.color,
       createdAt: new Date().toISOString(),
@@ -128,15 +125,14 @@ const Journal: React.FC<JournalProps> = ({ settings, onPrincipleChange }) => {
     setCategories(updated);
     storage.saveCategories(updated, language);
     setShowAddCategory(false);
-    setNewCategory({ name: '', color: '#6b7280' });
+    setNewCategory({ name: '', color: '#c17b5c' });
   };
-  // 删除分类
+
   const handleDeleteCategory = (id: string) => {
-    if (!confirm(language === 'zh' ? '确定要删除该分类吗？' : 'Delete this category?')) return;
+    if (!window.confirm(t('deleteCategory', language))) return;
     const updated = categories.filter(c => c.id !== id);
     setCategories(updated);
     storage.saveCategories(updated, language);
-    // 还需同步将所有引用该分类的原则的 category 字段置空
     const updatedPrinciples = principles.map(p => p.category === id ? { ...p, category: '' } : p);
     setPrinciples(updatedPrinciples);
     storage.savePrinciples(updatedPrinciples, language);
@@ -144,7 +140,7 @@ const Journal: React.FC<JournalProps> = ({ settings, onPrincipleChange }) => {
 
   const getCategoryColor = (categoryId: string) => {
     const category = categories.find(c => c.id === categoryId);
-    return category?.color || '#6b7280';
+    return category?.color || '#7a7068';
   };
 
   const getCategoryName = (categoryId: string) => {
@@ -154,77 +150,74 @@ const Journal: React.FC<JournalProps> = ({ settings, onPrincipleChange }) => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center space-x-3">
-          <BookOpen size={24} className="text-gray-500" />
-          <h1 className="text-2xl font-bold text-gray-900">
+          <BookOpen size={22} className="text-clay-500" />
+          <h1 className="page-title mb-0">
             {t('myInvestmentJournal', language)}
           </h1>
         </div>
-        
+
         <button
+          type="button"
           onClick={() => setShowAddForm(true)}
-          className="btn-primary flex items-center space-x-2"
+          className="btn-primary flex items-center space-x-2 self-start"
         >
           <Plus size={16} />
           <span>{t('addPrinciple', language)}</span>
         </button>
       </div>
 
-      {/* Categories Sidebar */}
       <div className="flex flex-col lg:flex-row gap-6">
         <div className="lg:w-64">
           <div className="card p-4">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-gray-900">
+              <h3 className="text-sm font-semibold text-ink">
                 {t('category', language)}
               </h3>
               <button
+                type="button"
                 className="btn-secondary btn-xs flex items-center"
                 onClick={() => setShowAddCategory(true)}
-                title={language === 'zh' ? '新增分类' : 'Add Category'}
+                title={t('addCategory', language)}
               >
                 <Plus size={14} />
               </button>
             </div>
-            {/* 新增分类弹窗 */}
             {showAddCategory && (
-              <div className="mb-3 p-3 rounded bg-gray-50 border border-gray-200 flex flex-col gap-2">
+              <div className="mb-3 p-3 rounded-[12px] bg-paper-200 border border-paper-400 flex flex-col gap-2">
+                <input
+                  type="text"
+                  className="input"
+                  placeholder={t('categoryName', language)}
+                  value={newCategory.name}
+                  onChange={e => setNewCategory(c => ({ ...c, name: e.target.value }))}
+                />
                 <div className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    className={`input flex-1 min-w-[120px] px-3 py-2 ${language === 'en' ? 'text-sm' : 'text-base'}`}
-                    placeholder={language === 'zh' ? '分类名' : 'Category Name'}
-                    value={newCategory.name}
-                    onChange={e => setNewCategory(c => ({ ...c, name: e.target.value }))}
-                  />
-                </div>
-                <div className="flex items-center gap-2 mt-2">
                   <input
                     type="color"
                     value={newCategory.color}
                     onChange={e => setNewCategory(c => ({ ...c, color: e.target.value }))}
-                    title={language === 'zh' ? '选择颜色' : 'Pick Color'}
+                    title={t('addCategory', language)}
                     className="w-8 h-8 border-0 p-0 bg-transparent cursor-pointer"
-                    style={{ width: '100%' }}
                   />
-                  <button className="btn-primary btn-xs" onClick={handleAddCategory}>
-                    {language === 'zh' ? '保存' : 'Save'}
+                  <button type="button" className="btn-primary btn-xs" onClick={handleAddCategory}>
+                    {t('save', language)}
                   </button>
-                  <button className="btn-secondary btn-xs" onClick={() => setShowAddCategory(false)}>
+                  <button type="button" className="btn-secondary btn-xs" onClick={() => setShowAddCategory(false)}>
                     <X size={12} />
                   </button>
                 </div>
               </div>
             )}
-            <div className="space-y-2">
+            <div className="space-y-1">
               <button
+                type="button"
                 onClick={() => setSelectedCategory('all')}
-                className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                className={`w-full text-left px-3 py-2 rounded-[12px] text-sm transition-colors ${
                   selectedCategory === 'all'
-                    ? 'bg-primary-50 text-primary-700'
-                    : 'text-gray-600 hover:bg-gray-50'
+                    ? 'bg-clay-50 text-clay-700'
+                    : 'text-ink-muted hover:bg-paper-200'
                 }`}
               >
                 {t('allCategories', language)}
@@ -232,22 +225,24 @@ const Journal: React.FC<JournalProps> = ({ settings, onPrincipleChange }) => {
               {categories.map((category) => (
                 <div key={category.id} className="flex items-center group">
                   <button
+                    type="button"
                     onClick={() => setSelectedCategory(category.id)}
-                    className={`flex-1 text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center space-x-2 ${
+                    className={`flex-1 text-left px-3 py-2 rounded-[12px] text-sm transition-colors flex items-center space-x-2 ${
                       selectedCategory === category.id
-                        ? 'bg-primary-50 text-primary-700'
-                        : 'text-gray-600 hover:bg-gray-50'
+                        ? 'bg-clay-50 text-clay-700'
+                        : 'text-ink-muted hover:bg-paper-200'
                     }`}
                   >
-                    <div 
-                      className="w-3 h-3 rounded-full" 
+                    <div
+                      className="w-2.5 h-2.5 rounded-full"
                       style={{ backgroundColor: category.color }}
                     />
                     <span>{category.name}</span>
                   </button>
                   <button
-                    className="ml-1 text-gray-400 hover:text-red-500 invisible group-hover:visible"
-                    title={language === 'zh' ? '删除分类' : 'Delete Category'}
+                    type="button"
+                    className="ml-1 text-ink-faint hover:text-rose-500 opacity-100 md:opacity-0 md:group-hover:opacity-100 p-1"
+                    title={t('delete', language)}
                     onClick={() => handleDeleteCategory(category.id)}
                   >
                     <Trash2 size={14} />
@@ -258,15 +253,14 @@ const Journal: React.FC<JournalProps> = ({ settings, onPrincipleChange }) => {
           </div>
         </div>
 
-        {/* Principles List */}
         <div className="flex-1">
           {filteredPrinciples.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="text-gray-400 text-lg mb-2">
+            <div className="text-center py-14 card">
+              <div className="font-serif text-xl text-ink-muted mb-2">
                 {t('noPrinciples', language)}
               </div>
-              <p className="text-gray-500 text-sm">
-                {language === 'zh' ? '开始记录你的投资原则' : 'Start recording your investment principles'}
+              <p className="text-ink-faint text-sm">
+                {t('startRecordingPrinciples', language)}
               </p>
             </div>
           ) : (
@@ -287,17 +281,16 @@ const Journal: React.FC<JournalProps> = ({ settings, onPrincipleChange }) => {
         </div>
       </div>
 
-      {/* Add/Edit Form Modal */}
       {(showAddForm || editingPrinciple) && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="fixed inset-0 bg-ink/35 flex items-center justify-center p-4 z-50">
+          <div className="card p-6 w-full max-w-md">
+            <h2 className="font-serif text-lg text-ink mb-4">
               {editingPrinciple ? t('edit', language) : t('addPrinciple', language)}
             </h2>
-            
+
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-ink-muted mb-2">
                   {t('principle', language)}
                 </label>
                 <textarea
@@ -308,9 +301,9 @@ const Journal: React.FC<JournalProps> = ({ settings, onPrincipleChange }) => {
                   required
                 />
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-ink-muted mb-2">
                   {t('category', language)}
                 </label>
                 <select
@@ -328,15 +321,13 @@ const Journal: React.FC<JournalProps> = ({ settings, onPrincipleChange }) => {
                 </select>
               </div>
             </div>
-            
+
             <div className="flex justify-end space-x-3 mt-6">
-              <button
-                onClick={handleCancel}
-                className="btn-secondary"
-              >
+              <button type="button" onClick={handleCancel} className="btn-secondary">
                 {t('cancel', language)}
               </button>
               <button
+                type="button"
                 onClick={editingPrinciple ? handleEditPrinciple : handleAddPrinciple}
                 className="btn-primary"
               >
@@ -350,7 +341,6 @@ const Journal: React.FC<JournalProps> = ({ settings, onPrincipleChange }) => {
   );
 };
 
-// Principle Card Component
 interface PrincipleCardProps {
   principle: InvestmentPrinciple;
   categoryName: string;
@@ -369,32 +359,25 @@ const PrincipleCard: React.FC<PrincipleCardProps> = ({
   settings,
 }) => {
   const { language } = settings;
-  const [showActions, setShowActions] = useState(false);
 
   return (
-    <div 
-      className="card p-6 relative group"
-      onMouseEnter={() => setShowActions(true)}
-      onMouseLeave={() => setShowActions(false)}
-    >
-      {/* Left border for learned principles */}
+    <div className="card p-6 relative group">
       {principle.type === 'learned' && (
-        <div 
-          className="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl"
+        <div
+          className="absolute left-0 top-0 bottom-0 w-1 rounded-l-[12px]"
           style={{ backgroundColor: categoryColor }}
         />
       )}
-      
-      <div className="flex items-start justify-between">
-        <div className="flex-1 pr-4">
-          {/* Category tag */}
-          <div className="flex items-center space-x-2 mb-3">
-            <span 
+
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center flex-wrap gap-2 mb-3">
+            <span
               className="tag text-xs"
-              style={{ 
-                backgroundColor: `${categoryColor}20`, 
+              style={{
+                backgroundColor: `${categoryColor}20`,
                 color: categoryColor,
-                border: `1px solid ${categoryColor}40`
+                border: `1px solid ${categoryColor}40`,
               }}
             >
               {categoryName}
@@ -405,18 +388,16 @@ const PrincipleCard: React.FC<PrincipleCardProps> = ({
               </span>
             )}
           </div>
-          
-          {/* Principle content */}
-          <p className="text-gray-900 leading-relaxed">
+
+          <p className="text-ink leading-relaxed">
             {principle.content}
           </p>
-          
-          {/* Source trade link */}
+
           {principle.sourceTradeId && (
             <div className="mt-3">
               <Link
                 to={`/edit/${principle.sourceTradeId}`}
-                className="inline-flex items-center space-x-1 text-sm text-primary-600 hover:text-primary-800"
+                className="inline-flex items-center space-x-1 text-sm text-clay-600 hover:text-clay-700"
               >
                 <ExternalLink size={12} />
                 <span>{t('sourceTrade', language)}</span>
@@ -424,12 +405,10 @@ const PrincipleCard: React.FC<PrincipleCardProps> = ({
             </div>
           )}
         </div>
-        
-        {/* Actions */}
-        <div className={`flex items-center space-x-1 transition-opacity ${
-          showActions ? 'opacity-100' : 'opacity-0'
-        }`}>
+
+        <div className="flex items-center space-x-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shrink-0">
           <button
+            type="button"
             onClick={onEdit}
             className="btn-secondary p-2"
             title={t('edit', language)}
@@ -437,6 +416,7 @@ const PrincipleCard: React.FC<PrincipleCardProps> = ({
             <Edit size={14} />
           </button>
           <button
+            type="button"
             onClick={onDelete}
             className="btn-danger p-2"
             title={t('delete', language)}
@@ -449,4 +429,4 @@ const PrincipleCard: React.FC<PrincipleCardProps> = ({
   );
 };
 
-export default Journal; 
+export default Journal;

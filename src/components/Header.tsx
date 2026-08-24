@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Plus, BarChart3, Settings, Globe, BookOpen, Menu, X } from 'lucide-react';
+import { Plus, BarChart3, Settings, BookOpen, Menu, X, Library, PenLine } from 'lucide-react';
 import { Language } from '../types';
 import { t } from '../i18n';
 import Logo from './Logo';
+import LanguageToggle from './LanguageToggle';
 
 interface HeaderProps {
   language: Language;
@@ -16,27 +17,43 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageChange }) => {
 
   const navItems = [
     { path: '/dashboard', label: 'dashboard', icon: BarChart3 },
+    { path: '/notes', label: 'notes', icon: Library },
+    { path: '/diary', label: 'diary', icon: PenLine },
     { path: '/journal', label: 'journal', icon: BookOpen },
     { path: '/review', label: 'review', icon: BarChart3 },
     { path: '/settings', label: 'settings', icon: Settings },
   ];
 
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMenuOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = previous;
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [menuOpen]);
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
+
   return (
-    <header className="bg-white border-b border-gray-100 shadow-soft w-full overflow-x-hidden sticky top-0 z-30">
+    <header className="bg-paper-50/90 backdrop-blur-md border-b border-paper-400 shadow-soft w-full overflow-x-hidden sticky top-0 z-30">
       <div className="container mx-auto px-4 max-w-6xl">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3 group">
-            <div className="flex items-center justify-center">
-              <Logo size="md" className="text-blue-600 group-hover:text-blue-700 transition-colors duration-200" />
-            </div>
-            <span className="text-xl font-semibold text-gray-900">
+        <div className="flex items-center justify-between h-16 gap-3">
+          <Link to="/" className="flex items-center space-x-2.5 group shrink-0">
+            <Logo size="md" className="text-clay-600 group-hover:text-clay-700 transition-colors duration-200" />
+            <span className="font-serif text-xl text-ink tracking-tight">
               {language === 'zh' ? '观市' : 'MarketZen'}
             </span>
           </Link>
 
-          {/* PC导航 */}
-          <nav className="hidden md:flex items-center space-x-1 w-auto">
+          <nav className="hidden md:flex items-center gap-0.5 min-w-0 flex-1 overflow-x-auto mx-1">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
@@ -44,53 +61,53 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageChange }) => {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  className={`flex items-center space-x-1.5 px-2.5 py-2 rounded-[12px] text-[13px] font-medium transition-colors whitespace-nowrap ${
                     isActive
-                      ? 'bg-primary-50 text-primary-700'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                      ? 'bg-clay-50 text-clay-700'
+                      : 'text-ink-muted hover:text-ink hover:bg-paper-200'
                   }`}
                 >
-                  <Icon size={16} />
+                  <Icon size={15} />
                   <span>{t(item.label, language)}</span>
                 </Link>
               );
             })}
           </nav>
 
-          {/* PC端 Actions */}
-          <div className="hidden md:flex items-center space-x-3">
-            <button
-              onClick={() => onLanguageChange(language === 'zh' ? 'en' : 'zh')}
-              className="flex items-center space-x-1 px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
-            >
-              <Globe size={16} />
-              <span>{language === 'zh' ? 'EN' : '中'}</span>
-            </button>
+          <div className="flex items-center space-x-2 shrink-0">
+            <LanguageToggle language={language} onChange={onLanguageChange} />
             <Link
               to="/new"
-              className="btn-primary flex items-center space-x-2"
+              className="btn-primary hidden sm:flex items-center space-x-2"
             >
               <Plus size={16} />
               <span>{t('newTrade', language)}</span>
             </Link>
+            <button
+              className="md:hidden p-2 rounded-[12px] text-ink hover:bg-paper-200"
+              onClick={() => setMenuOpen(true)}
+              aria-label={t('openMenu', language)}
+              type="button"
+            >
+              <Menu size={22} />
+            </button>
           </div>
-          {/* 移动端汉堡按钮 */}
-          <button className="md:hidden p-2" onClick={() => setMenuOpen(true)} aria-label="Open menu">
-            <Menu size={24} />
-          </button>
         </div>
       </div>
-      {/* 移动端下拉菜单/侧边栏 */}
+
       {menuOpen && (
-        <div className="fixed inset-0 z-40 flex">
-          {/* 遮罩层 */}
-          <div className="fixed inset-0 bg-black/40" onClick={() => setMenuOpen(false)} />
-          {/* 侧边栏 */}
-          <div className="ml-auto w-2/3 max-w-xs bg-white h-full shadow-lg flex flex-col p-6 relative animate-slide-in">
-            <button className="absolute top-4 right-4 p-2" onClick={() => setMenuOpen(false)} aria-label="Close menu">
-              <X size={24} />
+        <div className="fixed inset-0 z-40 flex md:hidden">
+          <div className="fixed inset-0 bg-ink/30" onClick={() => setMenuOpen(false)} />
+          <div className="ml-auto w-72 max-w-[85%] bg-paper-50 h-full shadow-large flex flex-col p-6 relative animate-slide-in border-l border-paper-400">
+            <button
+              className="absolute top-4 right-4 p-2 rounded-[12px] hover:bg-paper-200"
+              onClick={() => setMenuOpen(false)}
+              aria-label={t('closeMenu', language)}
+              type="button"
+            >
+              <X size={22} />
             </button>
-            <div className="flex flex-col space-y-4 mt-8">
+            <div className="flex flex-col space-y-2 mt-10">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path;
@@ -98,10 +115,10 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageChange }) => {
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-base font-medium transition-colors ${
+                    className={`flex items-center space-x-2 px-3 py-2.5 rounded-[12px] text-base font-medium transition-colors ${
                       isActive
-                        ? 'bg-primary-50 text-primary-700'
-                        : 'text-gray-700 hover:text-primary-700 hover:bg-primary-50'
+                        ? 'bg-clay-50 text-clay-700'
+                        : 'text-ink hover:text-clay-700 hover:bg-clay-50'
                     }`}
                     onClick={() => setMenuOpen(false)}
                   >
@@ -110,19 +127,9 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageChange }) => {
                   </Link>
                 );
               })}
-              <button
-                onClick={() => {
-                  onLanguageChange(language === 'zh' ? 'en' : 'zh');
-                  setMenuOpen(false);
-                }}
-                className="flex items-center space-x-2 px-3 py-2 rounded-lg text-base text-gray-600 hover:text-primary-700 hover:bg-primary-50 transition-colors"
-              >
-                <Globe size={18} />
-                <span>{language === 'zh' ? 'EN' : '中'}</span>
-              </button>
               <Link
                 to="/new"
-                className="btn-primary flex items-center space-x-2 justify-center"
+                className="btn-primary flex items-center space-x-2 justify-center mt-4 sm:hidden"
                 onClick={() => setMenuOpen(false)}
               >
                 <Plus size={18} />
@@ -136,4 +143,4 @@ const Header: React.FC<HeaderProps> = ({ language, onLanguageChange }) => {
   );
 };
 
-export default Header; 
+export default Header;

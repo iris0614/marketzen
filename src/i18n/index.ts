@@ -2,28 +2,27 @@ import { Language } from '../types';
 
 export const translations = {
   zh: {
-    // Navigation
     dashboard: '仪表盘',
     journal: '投资手帐',
+    notes: '读书笔记',
+    diary: '日记',
     newTrade: '新建交易',
     review: '复盘分析',
     settings: '设置',
-    
-    // Dashboard
+
     totalPnl: '总盈亏',
     winRate: '胜率',
     openPositions: '持仓中',
     totalTrades: '总交易',
     averageReturn: '平均收益',
-    
-    // Trade Form
+
     tradeBackground: '交易背景',
     macroContext: '宏观背景',
     keywords: '关键词',
     addKeyword: '添加关键词',
     thesis: '交易笔记',
     thesisPlaceholder: '记录你的交易逻辑和思考...',
-    
+
     tradeDetails: '交易详情',
     asset: '标的',
     assetPlaceholder: '输入股票代码或加密货币对',
@@ -33,19 +32,18 @@ export const translations = {
     entryPrice: '买入价格',
     amount: '投入金额',
     portfolioPercentage: '仓位比例',
-    
+
     tradePlan: '交易计划',
     takeProfit: '止盈位',
     stopLoss: '止损位',
-    
+
     tradeResult: '交易结果',
     exitPrice: '平仓价格',
     finalPnl: '最终盈亏',
     postMortemNotes: '复盘总结',
     postMortemPlaceholder: '记录这次交易的经验教训...',
     extractAsPrinciple: '提炼为原则',
-    
-    // Actions
+
     save: '保存',
     cancel: '取消',
     edit: '编辑',
@@ -53,46 +51,49 @@ export const translations = {
     close: '平仓',
     open: '持仓中',
     closed: '已平仓',
-    
-    // Status
+    confirm: '确认',
+    exitPricePrompt: '平仓价格',
+
     status: '状态',
     profit: '盈利',
     loss: '亏损',
-    
-    // Analysis
+    pnlFilter: '盈亏筛选',
+
     filterByKeywords: '按关键词筛选',
     searchTrades: '搜索交易',
     dateRange: '日期范围',
     allTrades: '所有交易',
     profitTrades: '盈利交易',
     lossTrades: '亏损交易',
-    
-    // Settings
+    filterResults: '筛选结果',
+    tryAdjustFilters: '尝试调整筛选条件',
+    noClosedTrades: '暂无已平仓交易',
+    closedTradesHint: '平仓交易后会显示在这里',
+    startFirstTrade: '开始记录你的第一笔交易',
+
     language: '语言',
     totalPortfolio: '总资金',
     currency: '货币',
     chinese: '中文',
     english: 'English',
-    
-    // Messages
+
     tradeSaved: '交易已保存',
     tradeDeleted: '交易已删除',
     tradeClosed: '交易已平仓',
     confirmDelete: '确定要删除这笔交易吗？',
     confirmClose: '确定要平仓这笔交易吗？',
-    
-    // Placeholders
+
     noTrades: '暂无交易记录',
     noResults: '没有找到符合条件的交易',
     loading: '加载中...',
-    
-    // Errors
+    tradeNotFound: '未找到该笔交易',
+    backToDashboard: '返回仪表盘',
+
     required: '此字段为必填项',
     invalidPrice: '请输入有效的价格',
     invalidAmount: '请输入有效的金额',
     invalidPercentage: '请输入有效的百分比',
-    
-    // Investment Journal
+
     myInvestmentJournal: '我的投资手帐',
     myPlaybook: '我的交易法则',
     addPrinciple: '添加原则',
@@ -129,31 +130,106 @@ export const translations = {
     vixIndexInvalid: '请输入有效的VIX指数值 (0-100)',
     tradeDateRequired: '请选择交易日期',
     instrumentTypeRequired: '请选择交易类型',
+    addCategory: '新增分类',
+    categoryName: '分类名',
+    deleteCategory: '确定要删除该分类吗？',
+    startRecordingPrinciples: '开始记录你的投资原则',
+    commonKeywords: '常用关键词',
+
+    dataBackup: '数据备份与恢复',
+    exportData: '导出数据',
+    importData: '导入数据',
+    backupHint: '导出后请妥善保存备份文件。导入数据会覆盖当前所有本地数据。',
+    importFailed: '导入失败，文件格式不正确。',
+    settingsSaved: '设置已保存',
+
+    investmentNotes: '投资读书笔记',
+    notesSubtitle: '把经典投资书籍折成一张张可检索的卡片，像手帐一样慢慢翻。',
+    searchNotes: '搜索书名、作者、金句或心得...',
+    allTags: '全部标签',
+    noNotes: '没有找到匹配的读书笔记',
+    tryOtherKeywords: '试试其他关键词或标签',
+    readingNotes: '阅读心得',
+    coreQuote: '核心金句',
+    author: '作者',
+    publishedYear: '出版',
+    booksCount: '本藏书',
+    closeDetail: '收起',
+    readMore: '展开笔记',
+
+    tagValue: '价值投资',
+    tagPsychology: '投资心理',
+    tagCycle: '周期',
+    tagRisk: '风险管理',
+    tagTrading: '交易',
+    tagPhilosophy: '投资哲学',
+    tagBiography: '人物传记',
+    tagChina: '中国市场',
+    tagIndex: '指数与被动',
+    tagGrowth: '成长投资',
+    tagMacro: '宏观',
+    tagBehavioral: '行为金融',
+    tagFundamentals: '基本面',
+    tagBusiness: '商业洞察',
+
+    welcomeEnter: '开始观市',
+    switchToEnglish: 'English',
+    switchToChinese: '中文',
+    siteName: '观市',
+    somethingWentWrong: '页面出了一点小状况',
+    reloadPage: '重新加载',
+    errorHint: '不用担心，你的本地数据都还在。刷新一下即可继续。',
+    openMenu: '打开菜单',
+    closeMenu: '关闭菜单',
+
+    diaryTitle: '交易日记',
+    diarySubtitle: '像 Notion 一样写一页纸：标题、列表、待办、引言。偶尔记下交易心得即可。',
+    newDiaryPage: '新建一页',
+    untitledPage: '无标题',
+    diarySearch: '搜索日记...',
+    noDiary: '还没有日记',
+    noDiaryHint: '新建一页，记下今天的市场感觉、仓位想法或一句话原则。',
+    diaryPlaceholder: '输入文字，或按 / 选择格式',
+    diaryTitlePlaceholder: '无标题',
+    slashHint: '输入 / 插入标题、列表、待办、引言或分割线',
+    savedJustNow: '已保存',
+    saving: '保存中…',
+    confirmDeleteDiary: '确定要删除这页日记吗？',
+    blockParagraph: '正文',
+    blockHeading1: '标题 1',
+    blockHeading2: '标题 2',
+    blockHeading3: '标题 3',
+    blockBullet: '无序列表',
+    blockNumbered: '有序列表',
+    blockTodo: '待办',
+    blockQuote: '引言',
+    blockDivider: '分割线',
+    diaryDate: '日期',
+    emptyDiaryPreview: '空白页',
   },
-  
+
   en: {
-    // Navigation
     dashboard: 'Dashboard',
     journal: 'Journal',
+    notes: 'Notes',
+    diary: 'Diary',
     newTrade: 'New Trade',
     review: 'Review',
     settings: 'Settings',
-    
-    // Dashboard
+
     totalPnl: 'Total P&L',
     winRate: 'Win Rate',
     openPositions: 'Open Positions',
     totalTrades: 'Total Trades',
     averageReturn: 'Avg Return',
-    
-    // Trade Form
+
     tradeBackground: 'Trade Background',
     macroContext: 'Macro Context',
     keywords: 'Keywords',
     addKeyword: 'Add Keyword',
     thesis: 'My Thesis',
     thesisPlaceholder: 'Record your trading logic and thoughts...',
-    
+
     tradeDetails: 'Trade Details',
     asset: 'Asset',
     assetPlaceholder: 'Enter stock symbol or crypto pair',
@@ -163,19 +239,18 @@ export const translations = {
     entryPrice: 'Entry Price',
     amount: 'Amount',
     portfolioPercentage: 'Portfolio %',
-    
+
     tradePlan: 'Trade Plan',
     takeProfit: 'Take Profit',
     stopLoss: 'Stop Loss',
-    
+
     tradeResult: 'Trade Result',
     exitPrice: 'Exit Price',
     finalPnl: 'Final P&L',
     postMortemNotes: 'Post-Mortem Notes',
     postMortemPlaceholder: 'Record lessons learned from this trade...',
     extractAsPrinciple: 'Extract as Principle',
-    
-    // Actions
+
     save: 'Save',
     cancel: 'Cancel',
     edit: 'Edit',
@@ -183,46 +258,49 @@ export const translations = {
     close: 'Close',
     open: 'Open',
     closed: 'Closed',
-    
-    // Status
+    confirm: 'Confirm',
+    exitPricePrompt: 'Exit price',
+
     status: 'Status',
     profit: 'Profit',
     loss: 'Loss',
-    
-    // Analysis
+    pnlFilter: 'P&L Filter',
+
     filterByKeywords: 'Filter by Keywords',
-    searchTrades: 'Search Trades',
+    searchTrades: 'Search trades',
     dateRange: 'Date Range',
     allTrades: 'All Trades',
     profitTrades: 'Profit Trades',
     lossTrades: 'Loss Trades',
-    
-    // Settings
+    filterResults: 'Filter Results',
+    tryAdjustFilters: 'Try adjusting your filters',
+    noClosedTrades: 'No closed trades yet',
+    closedTradesHint: 'Closed trades will appear here',
+    startFirstTrade: 'Start recording your first trade',
+
     language: 'Language',
     totalPortfolio: 'Total Portfolio',
     currency: 'Currency',
     chinese: '中文',
     english: 'English',
-    
-    // Messages
+
     tradeSaved: 'Trade saved successfully',
     tradeDeleted: 'Trade deleted successfully',
     tradeClosed: 'Trade closed successfully',
     confirmDelete: 'Are you sure you want to delete this trade?',
     confirmClose: 'Are you sure you want to close this trade?',
-    
-    // Placeholders
+
     noTrades: 'No trades yet',
     noResults: 'No trades found',
     loading: 'Loading...',
-    
-    // Errors
+    tradeNotFound: 'Trade not found',
+    backToDashboard: 'Back to dashboard',
+
     required: 'This field is required',
     invalidPrice: 'Please enter a valid price',
     invalidAmount: 'Please enter a valid amount',
     invalidPercentage: 'Please enter a valid percentage',
-    
-    // Investment Journal
+
     myInvestmentJournal: 'My Investment Journal',
     myPlaybook: 'My Trading Playbook',
     addPrinciple: 'Add Principle',
@@ -259,9 +337,89 @@ export const translations = {
     vixIndexInvalid: 'Please enter a valid VIX index (0-100)',
     tradeDateRequired: 'Please select trade date',
     instrumentTypeRequired: 'Please select instrument type',
+    addCategory: 'Add Category',
+    categoryName: 'Category Name',
+    deleteCategory: 'Delete this category?',
+    startRecordingPrinciples: 'Start recording your investment principles',
+    commonKeywords: 'Common keywords',
+
+    dataBackup: 'Data Backup & Restore',
+    exportData: 'Export Data',
+    importData: 'Import Data',
+    backupHint: 'Keep your backup file safe. Importing will overwrite all current local data.',
+    importFailed: 'Import failed. The file format is invalid.',
+    settingsSaved: 'Settings saved',
+
+    investmentNotes: 'Investment Notes',
+    notesSubtitle: 'Fold classic investing books into searchable cards — a quiet notebook you can keep flipping.',
+    searchNotes: 'Search title, author, quote, or notes...',
+    allTags: 'All tags',
+    noNotes: 'No matching notes found',
+    tryOtherKeywords: 'Try another keyword or tag',
+    readingNotes: 'Reading notes',
+    coreQuote: 'Core quote',
+    author: 'Author',
+    publishedYear: 'Published',
+    booksCount: 'books',
+    closeDetail: 'Close',
+    readMore: 'Read notes',
+
+    tagValue: 'Value Investing',
+    tagPsychology: 'Psychology',
+    tagCycle: 'Cycles',
+    tagRisk: 'Risk',
+    tagTrading: 'Trading',
+    tagPhilosophy: 'Philosophy',
+    tagBiography: 'Biography',
+    tagChina: 'China',
+    tagIndex: 'Indexing',
+    tagGrowth: 'Growth',
+    tagMacro: 'Macro',
+    tagBehavioral: 'Behavioral',
+    tagFundamentals: 'Fundamentals',
+    tagBusiness: 'Business',
+
+    welcomeEnter: 'Begin Observing',
+    switchToEnglish: 'English',
+    switchToChinese: '中文',
+    siteName: 'MarketZen',
+    somethingWentWrong: 'Something went quietly wrong',
+    reloadPage: 'Reload',
+    errorHint: 'Your local data is safe. A refresh should bring you back.',
+    openMenu: 'Open menu',
+    closeMenu: 'Close menu',
+
+    diaryTitle: 'Trading Diary',
+    diarySubtitle: 'A Notion-like page: headings, lists, todos, quotes. Write a trading note when you feel like it.',
+    newDiaryPage: 'New page',
+    untitledPage: 'Untitled',
+    diarySearch: 'Search diary...',
+    noDiary: 'No diary pages yet',
+    noDiaryHint: 'Start a page for today’s market feel, a position thought, or a one-line principle.',
+    diaryPlaceholder: 'Type, or press / for blocks',
+    diaryTitlePlaceholder: 'Untitled',
+    slashHint: 'Type / to insert a heading, list, todo, quote, or divider',
+    savedJustNow: 'Saved',
+    saving: 'Saving…',
+    confirmDeleteDiary: 'Delete this diary page?',
+    blockParagraph: 'Text',
+    blockHeading1: 'Heading 1',
+    blockHeading2: 'Heading 2',
+    blockHeading3: 'Heading 3',
+    blockBullet: 'Bulleted list',
+    blockNumbered: 'Numbered list',
+    blockTodo: 'To-do',
+    blockQuote: 'Quote',
+    blockDivider: 'Divider',
+    diaryDate: 'Date',
+    emptyDiaryPreview: 'Empty page',
   },
-};
+} as const;
+
+export type TranslationKey = keyof typeof translations.zh;
 
 export const t = (key: string, language: Language): string => {
-  return translations[language][key as keyof typeof translations[typeof language]] || key;
-}; 
+  const dict = translations[language] as Record<string, string>;
+  const fallback = translations.zh as Record<string, string>;
+  return dict[key] || fallback[key] || key;
+};

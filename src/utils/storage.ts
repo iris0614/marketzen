@@ -1,4 +1,4 @@
-import { Trade, AppSettings, InvestmentPrinciple, PrincipleCategory } from '../types';
+import { Trade, AppSettings, InvestmentPrinciple, PrincipleCategory, DiaryEntry } from '../types';
 
 const STORAGE_KEYS = {
   TRADES: 'investment_tracker_trades',
@@ -8,6 +8,7 @@ const STORAGE_KEYS = {
   PRINCIPLES_EN: 'investment_tracker_principles_en',
   CATEGORIES_ZH: 'investment_tracker_categories_zh',
   CATEGORIES_EN: 'investment_tracker_categories_en',
+  DIARY: 'investment_tracker_diary',
 } as const;
 
 export const storage = {
@@ -240,5 +241,23 @@ export const storage = {
     const categories = storage.getCategories(language);
     categories.push(category);
     storage.saveCategories(categories, language);
+  },
+
+  getDiaryEntries: (): DiaryEntry[] => {
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.DIARY);
+      return data ? JSON.parse(data) : [];
+    } catch (error) {
+      console.error('Error loading diary:', error);
+      return [];
+    }
+  },
+
+  saveDiaryEntries: (entries: DiaryEntry[]): void => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.DIARY, JSON.stringify(entries));
+    } catch (error) {
+      console.error('Error saving diary:', error);
+    }
   },
 }; 

@@ -48,7 +48,7 @@ const Logo: React.FC<LogoProps> = ({ size = 'md', className = '' }) => {
           cy="16"
           r="2"
           fill="currentColor"
-          className="text-blue-600"
+          className="text-clay-500"
         />
         
         {/* 四个小点 - 代表四季/周期，使用更优雅的布局 */}

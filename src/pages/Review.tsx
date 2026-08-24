@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { Trade, PortfolioStats, AppSettings, FilterOptions } from '../types';
-import { formatCurrency, formatPercentage, calculatePnl, calculatePnlPercentage } from '../utils/calculations';
+import { Trade, PortfolioStats, AppSettings } from '../types';
+import { formatCurrency, calculatePnl } from '../utils/calculations';
 import { storage } from '../utils/storage';
 import { t } from '../i18n';
 import TradeCard from '../components/TradeCard';
@@ -10,43 +10,44 @@ interface ReviewProps {
   trades: Trade[];
   stats: PortfolioStats;
   settings: AppSettings;
+  onUpdateTrade: (id: string, updates: Partial<Trade>) => void;
+  onDeleteTrade: (id: string) => void;
 }
 
-const Review: React.FC<ReviewProps> = ({ trades, stats, settings }) => {
+const Review: React.FC<ReviewProps> = ({ trades, settings, onUpdateTrade, onDeleteTrade }) => {
   const { language } = settings;
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedKeywords, setSelectedKeywords] = useState<string[]>([]);
   const [statusFilter, setStatusFilter] = useState<'all' | 'open' | 'closed'>('all');
   const [pnlFilter, setPnlFilter] = useState<'all' | 'profit' | 'loss'>('all');
-  
+
   const availableKeywords = useMemo(() => storage.getKeywords(), []);
 
   const filteredTrades = useMemo(() => {
     return trades.filter(trade => {
-      // Search term filter
-      if (searchTerm && !trade.asset.toLowerCase().includes(searchTerm.toLowerCase()) &&
-          !trade.thesis.toLowerCase().includes(searchTerm.toLowerCase())) {
-        return false;
+      if (searchTerm) {
+        const q = searchTerm.toLowerCase();
+        if (!trade.asset.toLowerCase().includes(q) &&
+            !trade.thesis.toLowerCase().includes(q)) {
+          return false;
+        }
       }
-      
-      // Keywords filter
-      if (selectedKeywords.length > 0 && 
+
+      if (selectedKeywords.length > 0 &&
           !selectedKeywords.some(keyword => trade.macroContext.includes(keyword))) {
         return false;
       }
-      
-      // Status filter
+
       if (statusFilter !== 'all' && trade.status !== statusFilter) {
         return false;
       }
-      
-      // PnL filter
+
       if (pnlFilter !== 'all' && trade.exitPrice) {
         const pnl = calculatePnl(trade.entryPrice, trade.exitPrice, trade.direction);
         if (pnlFilter === 'profit' && pnl <= 0) return false;
         if (pnlFilter === 'loss' && pnl >= 0) return false;
       }
-      
+
       return true;
     });
   }, [trades, searchTerm, selectedKeywords, statusFilter, pnlFilter]);
@@ -55,16 +56,16 @@ const Review: React.FC<ReviewProps> = ({ trades, stats, settings }) => {
     const closedTrades = filteredTrades.filter(trade => trade.status === 'closed' && trade.exitPrice);
     let totalPnl = 0;
     let winningTrades = 0;
-    
+
     closedTrades.forEach(trade => {
-      if (trade.exitPrice) {
+      if (trade.exitPrice && trade.entryPrice) {
         const pnl = calculatePnl(trade.entryPrice, trade.exitPrice, trade.direction);
         const tradePnl = pnl * (trade.amount / trade.entryPrice);
         totalPnl += tradePnl;
         if (tradePnl > 0) winningTrades++;
       }
     });
-    
+
     return {
       totalTrades: filteredTrades.length,
       closedTrades: closedTrades.length,
@@ -74,8 +75,8 @@ const Review: React.FC<ReviewProps> = ({ trades, stats, settings }) => {
   }, [filteredTrades]);
 
   const handleKeywordToggle = (keyword: string) => {
-    setSelectedKeywords(prev => 
-      prev.includes(keyword) 
+    setSelectedKeywords(prev =>
+      prev.includes(keyword)
         ? prev.filter(k => k !== keyword)
         : [...prev, keyword]
     );
@@ -83,28 +84,23 @@ const Review: React.FC<ReviewProps> = ({ trades, stats, settings }) => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">
-          {t('review', language)}
-        </h1>
-      </div>
+      <h1 className="page-title">
+        {t('review', language)}
+      </h1>
 
-      {/* Filters */}
-      <div className="card p-6">
+      <div className="card p-5 sm:p-6">
         <div className="flex items-center space-x-2 mb-4">
-          <Filter size={20} className="text-gray-500" />
-          <h2 className="text-lg font-semibold text-gray-900">
+          <Filter size={18} className="text-ink-faint" />
+          <h2 className="section-title mb-0">
             {t('filterByKeywords', language)}
           </h2>
         </div>
 
-        {/* Search */}
         <div className="mb-4">
           <div className="relative">
-            <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint" />
             <input
-              type="text"
+              type="search"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder={t('searchTrades', language)}
@@ -113,20 +109,20 @@ const Review: React.FC<ReviewProps> = ({ trades, stats, settings }) => {
           </div>
         </div>
 
-        {/* Keywords */}
         {availableKeywords.length > 0 && (
           <div className="mb-4">
-            <p className="text-sm font-medium text-gray-700 mb-2">
+            <p className="text-sm font-medium text-ink-muted mb-2">
               {t('keywords', language)}
             </p>
             <div className="flex flex-wrap gap-2">
               {availableKeywords.map((keyword) => (
                 <button
+                  type="button"
                   key={keyword}
                   onClick={() => handleKeywordToggle(keyword)}
                   className={`tag ${
-                    selectedKeywords.includes(keyword) 
-                      ? 'tag-primary' 
+                    selectedKeywords.includes(keyword)
+                      ? 'tag-primary'
                       : 'tag-gray'
                   }`}
                 >
@@ -137,15 +133,14 @@ const Review: React.FC<ReviewProps> = ({ trades, stats, settings }) => {
           </div>
         )}
 
-        {/* Status and PnL Filters */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-ink-muted mb-2">
               {t('status', language)}
             </label>
             <select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as any)}
+              onChange={(e) => setStatusFilter(e.target.value as 'all' | 'open' | 'closed')}
               className="input"
             >
               <option value="all">{t('allTrades', language)}</option>
@@ -153,14 +148,14 @@ const Review: React.FC<ReviewProps> = ({ trades, stats, settings }) => {
               <option value="closed">{t('closed', language)}</option>
             </select>
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-ink-muted mb-2">
               {t('pnlFilter', language)}
             </label>
             <select
               value={pnlFilter}
-              onChange={(e) => setPnlFilter(e.target.value as any)}
+              onChange={(e) => setPnlFilter(e.target.value as 'all' | 'profit' | 'loss')}
               className="input"
             >
               <option value="all">{t('allTrades', language)}</option>
@@ -171,36 +166,35 @@ const Review: React.FC<ReviewProps> = ({ trades, stats, settings }) => {
         </div>
       </div>
 
-      {/* Results Summary */}
       {filteredTrades.length > 0 && (
-        <div className="card p-6">
+        <div className="card p-5 sm:p-6">
           <div className="flex items-center space-x-2 mb-4">
-            <BarChart3 size={20} className="text-gray-500" />
-            <h2 className="text-lg font-semibold text-gray-900">
-              {language === 'zh' ? '筛选结果' : 'Filter Results'}
+            <BarChart3 size={18} className="text-ink-faint" />
+            <h2 className="section-title mb-0">
+              {t('filterResults', language)}
             </h2>
           </div>
-          
+
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
-              <p className="text-sm text-gray-600">{t('totalTrades', language)}</p>
-              <p className="text-xl font-bold text-gray-900">{filteredStats.totalTrades}</p>
+              <p className="text-sm text-ink-muted">{t('totalTrades', language)}</p>
+              <p className="text-xl font-serif text-ink">{filteredStats.totalTrades}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600">{t('closed', language)}</p>
-              <p className="text-xl font-bold text-gray-900">{filteredStats.closedTrades}</p>
+              <p className="text-sm text-ink-muted">{t('closed', language)}</p>
+              <p className="text-xl font-serif text-ink">{filteredStats.closedTrades}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600">{t('totalPnl', language)}</p>
-              <p className={`text-xl font-bold ${
-                filteredStats.totalPnl >= 0 ? 'text-success-600' : 'text-danger-600'
+              <p className="text-sm text-ink-muted">{t('totalPnl', language)}</p>
+              <p className={`text-xl font-serif ${
+                filteredStats.totalPnl >= 0 ? 'text-sage-600' : 'text-rose-600'
               }`}>
                 {formatCurrency(filteredStats.totalPnl, settings.currency)}
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-600">{t('winRate', language)}</p>
-              <p className="text-xl font-bold text-gray-900">
+              <p className="text-sm text-ink-muted">{t('winRate', language)}</p>
+              <p className="text-xl font-serif text-ink">
                 {filteredStats.winRate.toFixed(1)}%
               </p>
             </div>
@@ -208,15 +202,14 @@ const Review: React.FC<ReviewProps> = ({ trades, stats, settings }) => {
         </div>
       )}
 
-      {/* Trades List */}
       <div className="space-y-4">
         {filteredTrades.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-gray-400 text-lg mb-2">
+          <div className="text-center py-14 card">
+            <div className="font-serif text-xl text-ink-muted mb-2">
               {t('noResults', language)}
             </div>
-            <p className="text-gray-500 text-sm">
-              {language === 'zh' ? '尝试调整筛选条件' : 'Try adjusting your filters'}
+            <p className="text-ink-faint text-sm">
+              {t('tryAdjustFilters', language)}
             </p>
           </div>
         ) : (
@@ -225,8 +218,8 @@ const Review: React.FC<ReviewProps> = ({ trades, stats, settings }) => {
               key={trade.id}
               trade={trade}
               settings={settings}
-              onUpdate={() => {}} // Read-only in review mode
-              onDelete={() => {}} // Read-only in review mode
+              onUpdate={onUpdateTrade}
+              onDelete={onDeleteTrade}
             />
           ))
         )}
@@ -235,4 +228,4 @@ const Review: React.FC<ReviewProps> = ({ trades, stats, settings }) => {
   );
 };
 
-export default Review; 
+export default Review;
